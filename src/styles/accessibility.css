@@ -1,0 +1,174 @@
+/* Accessibility Styles */
+
+:root {
+  --accessibility-font-size: 100%;
+  --accessibility-line-height: 100%;
+  --accessibility-letter-spacing: 0px;
+}
+
+/* Apply accessibility font size */
+html {
+  font-size: calc(16px * var(--accessibility-font-size) / 100);
+}
+
+/* Apply line height and letter spacing */
+body {
+  line-height: calc(1.6 * var(--accessibility-line-height) / 100);
+  letter-spacing: var(--accessibility-letter-spacing);
+}
+
+/* High Contrast Mode */
+.high-contrast {
+  --color-foreground: #000000;
+  --color-secondary: #333333;
+  --color-background: #FFFFFF;
+  --color-accent: #000000;
+}
+
+.high-contrast * {
+  border-color: #000000 !important;
+}
+
+.high-contrast button,
+.high-contrast a {
+  border: 2px solid #000000 !important;
+}
+
+/* Link Highlight */
+.highlight-links a {
+  text-decoration: underline !important;
+  text-decoration-thickness: 2px !important;
+  text-underline-offset: 4px !important;
+  color: #0000FF !important;
+  font-weight: 600 !important;
+}
+
+.highlight-links a:hover {
+  background-color: #FFFF00 !important;
+  color: #000000 !important;
+}
+
+.highlight-links a:focus {
+  outline: 3px solid #FF0000 !important;
+  outline-offset: 2px !important;
+}
+
+/* Readable Font */
+.readable-font,
+.readable-font * {
+  font-family: Arial, Helvetica, sans-serif !important;
+}
+
+/* Stop Animations */
+.stop-animations,
+.stop-animations *,
+.stop-animations *::before,
+.stop-animations *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Big Cursor */
+.big-cursor,
+.big-cursor * {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="black" stroke="white" stroke-width="1"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/></svg>') 12 12, auto !important;
+}
+
+.big-cursor a,
+.big-cursor button,
+.big-cursor [role="button"] {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="black" stroke="white" stroke-width="1"><path d="M8 3a1 1 0 011-1h6a1 1 0 011 1v11h2a1 1 0 01.707 1.707l-5 5a1 1 0 01-1.414 0l-5-5A1 1 0 017 14h2V3z"/></svg>') 12 12, pointer !important;
+}
+
+/* Keyboard Navigation */
+.keyboard-nav *:focus {
+  outline: 3px solid #C8A96A !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 4px rgba(200, 169, 106, 0.2) !important;
+}
+
+.keyboard-nav button:focus,
+.keyboard-nav a:focus,
+.keyboard-nav [role="button"]:focus {
+  transform: scale(1.05);
+  z-index: 10;
+}
+
+/* Skip to main content link (for screen readers) */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #C8A96A;
+  color: white;
+  padding: 8px 16px;
+  text-decoration: none;
+  z-index: 100;
+  border-radius: 0 0 8px 0;
+  font-weight: bold;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Screen reader only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Ensure minimum touch target size (44x44px) */
+@media (pointer: coarse) {
+  button,
+  a,
+  [role="button"] {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* High contrast mode for users who prefer it */
+@media (prefers-contrast: high) {
+  :root {
+    --color-foreground: #000000;
+    --color-secondary: #333333;
+    --color-background: #FFFFFF;
+  }
+}
+
+/* Focus visible (only show focus on keyboard navigation) */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 3px solid #C8A96A;
+  outline-offset: 2px;
+}
+
+/* Ensure text remains visible during webfont load */
+@font-face {
+  font-display: swap;
+}
