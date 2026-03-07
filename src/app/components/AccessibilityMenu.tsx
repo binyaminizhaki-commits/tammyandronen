@@ -140,7 +140,7 @@ export function AccessibilityMenu() {
       {/* Floating Button */}
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed left-6 bottom-6 z-50 w-14 h-14 bg-accent text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform focus:outline-none focus:ring-4 focus:ring-accent/50"
+        className="fixed bottom-4 left-4 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-accent text-white shadow-2xl transition-transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-accent/50 sm:bottom-6 sm:left-6"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
         aria-label="תפריט נגישות"
@@ -168,7 +168,7 @@ export function AccessibilityMenu() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -100 }}
               transition={{ type: "spring", damping: 25 }}
-              className="fixed left-6 bottom-24 z-50 w-96 max-h-[80vh] overflow-y-auto bg-white rounded-3xl shadow-2xl border border-black/10"
+              className="fixed inset-x-4 bottom-20 z-50 max-h-[calc(100vh-6rem)] overflow-y-auto rounded-3xl border border-black/10 bg-white shadow-2xl sm:bottom-24 sm:left-6 sm:right-auto sm:w-96 sm:max-h-[80vh]"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Header */}

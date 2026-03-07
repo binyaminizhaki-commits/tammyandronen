@@ -1,43 +1,147 @@
-﻿import { Navigation } from "../components/Navigation";
-import { UnifiedBackground } from "../components/UnifiedBackground";
 import { motion } from "motion/react";
-import { Mail, Phone, MapPin, Send } from "lucide-react";
+import { Mail, MapPin, Phone } from "lucide-react";
 import { useState } from "react";
-import { useTranslation } from "../translations/useTranslation";
+import { Link } from "react-router";
+
+import { Navigation } from "../components/Navigation";
+import { UnifiedBackground } from "../components/UnifiedBackground";
 import { useLanguage } from "../contexts/LanguageContext";
+import { useTranslation } from "../translations/useTranslation";
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const addressValue = "האוניברסיטה העברית, קמפוס ספרא, בניין הספרייה הישנה, ירושלים";
+const mapUrl =
+  "https://www.google.com/maps/search/?api=1&query=%D7%94%D7%90%D7%95%D7%A0%D7%99%D7%91%D7%A8%D7%A1%D7%99%D7%98%D7%94+%D7%94%D7%A2%D7%91%D7%A8%D7%99%D7%AA+%D7%A7%D7%9E%D7%A4%D7%95%D7%A1+%D7%A1%D7%A4%D7%A8%D7%90+%D7%91%D7%A0%D7%99%D7%99%D7%9F+%D7%94%D7%A1%D7%A4%D7%A8%D7%99%D7%99%D7%94+%D7%94%D7%99%D7%A9%D7%A0%D7%94+%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D";
+
+type ContactFormState = {
+  name: string;
+  email: string;
+  phone: string;
+  subject: string;
+  message: string;
+};
+
+const initialFormState: ContactFormState = {
+  name: "",
+  email: "",
+  phone: "",
+  subject: "",
+  message: "",
+};
 
 export function Contact() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const { isRTL } = useLanguage();
-  const mapQuery = encodeURIComponent("Hebrew University Safra Campus Old Library Building Jerusalem");
-  const mapEmbedSrc = `https://maps.google.com/maps?q=${mapQuery}&z=15&output=embed`;
-  const mapDirectionsHref = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
-  
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    subject: "",
-    message: "",
-  });
+  const [formData, setFormData] = useState<ContactFormState>(initialFormState);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setIsSubmitting(false);
-    alert(isRTL ? "תודה על פנייתך! ניצור איתך קשר בהקדם." : "Thank you for reaching out! We'll contact you soon.");
-    setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
+  const copy =
+    language === "he"
+      ? {
+          contactDescription: "השאירו הודעה ונחזור אליכם בהקדם.",
+          navigationTitle: "ניווט האתר",
+          formTitle: "שלחו הודעה",
+          submitLabel: "שליחת הודעה",
+          submittingLabel: "שולח...",
+          invalidEmail: "נא להזין כתובת דוא\"ל תקינה.",
+          success: "ההודעה נשלחה ונשמרה בהצלחה.",
+          fallbackError: "אירעה שגיאה בשליחת ההודעה. נסו שוב מאוחר יותר.",
+        }
+      : {
+          contactDescription: "Leave a message and we will get back to you soon.",
+          navigationTitle: "Site navigation",
+          formTitle: "Send a message",
+          submitLabel: "Send message",
+          submittingLabel: "Sending...",
+          invalidEmail: "Please enter a valid email address.",
+          success: "Your message was sent successfully.",
+          fallbackError: "There was a problem sending your message. Please try again later.",
+        };
+
+  const quickLinks = [
+    { label: t.nav.home, path: "/" },
+    { label: t.nav.tammyRonen, path: "/tammy-ronen" },
+    { label: t.nav.studio, path: "/studio" },
+    { label: t.nav.residency, path: "/residency" },
+    { label: t.nav.contact, path: "/contact" },
+  ];
+
+  const contactItems = [
+    {
+      title: t.contact.info.email,
+      value: "tammykleinman@gmail.com",
+      href: "mailto:tammykleinman@gmail.com",
+      icon: Mail,
+    },
+    {
+      title: t.contact.info.phone,
+      value: "050-6262730",
+      href: "tel:+972506262730",
+      icon: Phone,
+    },
+    {
+      title: t.contact.info.address,
+      value: addressValue,
+      href: mapUrl,
+      icon: MapPin,
+    },
+  ];
+
+  const handleChange = (field: keyof ContactFormState) => (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData((current) => ({
+      ...current,
+      [field]: event.target.value,
+    }));
   };
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const normalizedEmail = formData.email.trim().toLowerCase();
+    const payload = {
+      name: formData.name.trim(),
+      email: normalizedEmail,
+      phone: formData.phone.trim(),
+      subject: formData.subject.trim(),
+      message: formData.message.trim(),
+      pageUrl: window.location.href,
+    };
+
+    setSuccessMessage("");
+    setErrorMessage("");
+
+    if (!EMAIL_REGEX.test(normalizedEmail)) {
+      setErrorMessage(copy.invalidEmail);
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/.netlify/functions/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const result = (await response.json().catch(() => null)) as { message?: string } | null;
+
+      if (!response.ok) {
+        throw new Error(result?.message || copy.fallbackError);
+      }
+
+      setFormData(initialFormState);
+      setSuccessMessage(copy.success);
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : copy.fallbackError);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -45,169 +149,158 @@ export function Contact() {
       <UnifiedBackground />
       <Navigation />
 
-      <div className="max-w-7xl mx-auto px-6 py-16 space-y-24">
-        {/* Hero Section */}
+      <div className="mx-auto max-w-7xl space-y-16 px-6 py-16">
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className={`space-y-8 ${isRTL ? 'text-right' : 'text-left'}`}
+          className={isRTL ? "space-y-4 text-right" : "space-y-4 text-left"}
         >
-          <h1 className="text-6xl md:text-7xl">{t.contact.title}</h1>
-          <p className="text-xl text-secondary max-w-2xl leading-relaxed">
-            {t.contact.subtitle}
-          </p>
+          <h1 className="text-5xl md:text-6xl lg:text-7xl">{t.contact.title}</h1>
+          <p className="max-w-3xl text-xl leading-relaxed text-secondary">{copy.contactDescription}</p>
         </motion.section>
 
-        {/* Main Content */}
-        <div className="grid lg:grid-cols-2 gap-16">
-          {/* Contact Form */}
-          <motion.section
-            initial={{ opacity: 0, x: isRTL ? 30 : -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            <form onSubmit={handleSubmit} className="space-y-6" dir={isRTL ? "rtl" : "ltr"}>
-              <div className="space-y-2">
-                <label htmlFor="name" className="block text-sm text-secondary">
-                  {t.contact.form.name}
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  required
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="w-full px-6 py-4 rounded-xl bg-white/60 backdrop-blur-sm border border-black/10 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 transition-all duration-300"
-                  placeholder={t.contact.form.name}
-                />
-              </div>
+        <motion.section
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="grid gap-6 md:grid-cols-3"
+        >
+          {contactItems.map((item, index) => {
+            const Icon = item.icon;
+            const isAddress = item.icon === MapPin;
 
-              <div className="space-y-2">
-                <label htmlFor="email" className="block text-sm text-secondary">
-                  {t.contact.form.email}
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  required
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full px-6 py-4 rounded-xl bg-white/60 backdrop-blur-sm border border-black/10 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 transition-all duration-300"
-                  placeholder="your@email.com"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label htmlFor="phone" className="block text-sm text-secondary">
-                  {t.contact.form.phone}
-                </label>
-                <input
-                  type="tel"
-                  id="phone"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="w-full px-6 py-4 rounded-xl bg-white/60 backdrop-blur-sm border border-black/10 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 transition-all duration-300"
-                  placeholder="050-1234567"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label htmlFor="subject" className="block text-sm text-secondary">
-                  {t.contact.form.subject}
-                </label>
-                <input
-                  type="text"
-                  id="subject"
-                  name="subject"
-                  value={formData.subject}
-                  onChange={handleChange}
-                  className="w-full px-6 py-4 rounded-xl bg-white/60 backdrop-blur-sm border border-black/10 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 transition-all duration-300"
-                  placeholder={t.contact.form.subject}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label htmlFor="message" className="block text-sm text-secondary">
-                  {t.contact.form.message}
-                </label>
-                <textarea
-                  id="message"
-                  name="message"
-                  required
-                  value={formData.message}
-                  onChange={handleChange}
-                  rows={6}
-                  className="w-full px-6 py-4 rounded-xl bg-white/60 backdrop-blur-sm border border-black/10 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 transition-all duration-300 resize-none"
-                  placeholder={t.contact.form.message}
-                />
-              </div>
-
-              <motion.button
-                type="submit"
-                disabled={isSubmitting}
-                whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
-                whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
-                className="w-full px-8 py-4 bg-accent text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            return (
+              <motion.a
+                key={item.title}
+                href={item.href}
+                target={isAddress ? "_blank" : undefined}
+                rel={isAddress ? "noopener noreferrer" : undefined}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: index * 0.08 }}
+                className={`rounded-[1.75rem] border border-black/8 bg-white/70 p-6 shadow-lg shadow-stone-200/20 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-accent/35 ${
+                  isRTL ? "text-right" : "text-left"
+                }`}
               >
-                <span>{isSubmitting ? (isRTL ? "׳©׳•׳׳—..." : "Sending...") : t.contact.form.send}</span>
-                <Send className="w-5 h-5" />
-              </motion.button>
-            </form>
+                <div className="space-y-4">
+                  <Icon className="h-9 w-9 text-accent" />
+                  <div className="space-y-2">
+                    <h2 className="text-2xl font-light">{item.title}</h2>
+                    <p className="text-base leading-relaxed text-secondary">{item.value}</p>
+                  </div>
+                </div>
+              </motion.a>
+            );
+          })}
+        </motion.section>
+
+        <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
+          <motion.section
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="rounded-[2rem] border border-black/8 bg-white/68 p-8 shadow-xl shadow-stone-200/20 backdrop-blur-xl"
+          >
+            <div className={`space-y-6 ${isRTL ? "text-right" : "text-left"}`}>
+              <h2 className="text-4xl">{copy.navigationTitle}</h2>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {quickLinks.map((link) => (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    className="rounded-2xl border border-black/8 bg-white/85 px-5 py-4 text-base text-foreground transition-all duration-300 hover:border-accent/35 hover:text-accent"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
           </motion.section>
 
-          {/* Contact Info */}
           <motion.section
-            initial={{ opacity: 0, x: isRTL ? -30 : 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="space-y-8"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="rounded-[2rem] border border-black/8 bg-white/68 p-8 shadow-xl shadow-stone-200/20 backdrop-blur-xl"
           >
-            <div className="space-y-6">
-              <ContactInfoCard
-                icon={<Phone className="w-6 h-6 text-accent" />}
-                title={t.contact.info.phone}
-                content="050-6262730"
-                isRTL={isRTL}
-              />
-              <ContactInfoCard
-                icon={<Mail className="w-6 h-6 text-accent" />}
-                title={t.contact.info.email}
-                content="tammykleinman@gmail.com"
-                isRTL={isRTL}
-              />
-              <ContactInfoCard
-                icon={<MapPin className="w-6 h-6 text-accent" />}
-                title={t.contact.info.address}
-                content={t.contact.addressValue}
-                isRTL={isRTL}
-              />
-            </div>
-
-            {/* Interactive Map */}
-            <div className="space-y-3">
-              <div className="aspect-[4/3] rounded-2xl overflow-hidden border border-black/10 bg-white/70 backdrop-blur-sm relative">
-                <iframe
-                  title={isRTL ? "׳׳₪׳× ׳׳™׳§׳•׳ - ׳׳¨׳›׳™׳•׳ ׳¨׳™׳§׳•׳“׳™׳" : "Location map - Dance Archive"}
-                  src={mapEmbedSrc}
-                  className="w-full h-full"
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  allowFullScreen
-                />
+            <div className={`space-y-6 ${isRTL ? "text-right" : "text-left"}`}>
+              <div className="space-y-3">
+                <h2 className="text-4xl">{copy.formTitle}</h2>
+                <p className="text-lg leading-relaxed text-secondary">{t.contact.subtitle}</p>
               </div>
-              <a
-                href={mapDirectionsHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`inline-flex items-center gap-2 text-sm text-accent hover:text-accent/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent rounded-md ${isRTL ? "flex-row-reverse" : ""}`}
-              >
-                <MapPin className="w-4 h-4" />
-                <span>{isRTL ? "׳₪׳×׳— ׳‘׳׳₪׳•׳× Google" : "Open in Google Maps"}</span>
-              </a>
+
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <input
+                    type="text"
+                    value={formData.name}
+                    onChange={handleChange("name")}
+                    required
+                    placeholder={t.contact.form.name}
+                    className={`w-full rounded-2xl border border-black/10 bg-white/85 px-5 py-4 text-base focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 ${
+                      isRTL ? "text-right" : "text-left"
+                    }`}
+                  />
+                  <input
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange("email")}
+                    required
+                    placeholder={t.contact.form.email}
+                    className={`w-full rounded-2xl border border-black/10 bg-white/85 px-5 py-4 text-base focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 ${
+                      isRTL ? "text-right" : "text-left"
+                    }`}
+                  />
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <input
+                    type="tel"
+                    value={formData.phone}
+                    onChange={handleChange("phone")}
+                    placeholder={t.contact.form.phone}
+                    className={`w-full rounded-2xl border border-black/10 bg-white/85 px-5 py-4 text-base focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 ${
+                      isRTL ? "text-right" : "text-left"
+                    }`}
+                  />
+                  <input
+                    type="text"
+                    value={formData.subject}
+                    onChange={handleChange("subject")}
+                    placeholder={t.contact.form.subject}
+                    className={`w-full rounded-2xl border border-black/10 bg-white/85 px-5 py-4 text-base focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 ${
+                      isRTL ? "text-right" : "text-left"
+                    }`}
+                  />
+                </div>
+
+                <textarea
+                  value={formData.message}
+                  onChange={handleChange("message")}
+                  required
+                  rows={6}
+                  placeholder={t.contact.form.message}
+                  className={`w-full rounded-[1.5rem] border border-black/10 bg-white/85 px-5 py-4 text-base focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 ${
+                    isRTL ? "text-right" : "text-left"
+                  }`}
+                />
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="inline-flex items-center justify-center rounded-full bg-accent px-6 py-3 text-base font-medium text-white shadow-lg transition-all duration-300 hover:scale-[1.01] hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {isSubmitting ? copy.submittingLabel : copy.submitLabel}
+                </button>
+
+                {successMessage ? <p className="text-sm text-green-700">{successMessage}</p> : null}
+                {errorMessage ? <p className="text-sm text-red-600">{errorMessage}</p> : null}
+              </form>
             </div>
           </motion.section>
         </div>
@@ -215,44 +308,3 @@ export function Contact() {
     </div>
   );
 }
-
-interface ContactInfoCardProps {
-  icon: React.ReactNode;
-  title: string;
-  content: string;
-  isRTL: boolean;
-}
-
-function ContactInfoCard({ icon, title, content, isRTL }: ContactInfoCardProps) {
-  const [isHovered, setIsHovered] = useState(false);
-
-  return (
-    <motion.div
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
-      whileHover={{ x: isRTL ? -6 : 6 }}
-      transition={{ duration: 0.3 }}
-    >
-      <motion.div
-        className="p-6 rounded-2xl backdrop-blur-xl border transition-all duration-300"
-        style={{
-          background: "rgba(255, 255, 255, 0.5)",
-          borderColor: isHovered ? "rgba(200, 169, 106, 0.4)" : "rgba(17, 17, 17, 0.08)",
-          boxShadow: isHovered
-            ? "0 8px 30px rgba(200, 169, 106, 0.2)"
-            : "0 4px 20px rgba(0, 0, 0, 0.04)",
-        }}
-        dir={isRTL ? "rtl" : "ltr"}
-      >
-        <div className={`flex items-start gap-4 ${isRTL ? 'text-right' : 'text-left'}`}>
-          <div className="flex-shrink-0">{icon}</div>
-          <div className="flex-1 space-y-1">
-            <h3 className="font-semibold text-primary">{title}</h3>
-            <p className="text-secondary text-sm leading-relaxed">{content}</p>
-          </div>
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-}
-

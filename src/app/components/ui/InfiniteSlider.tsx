@@ -1,7 +1,7 @@
 'use client';
 import { cn } from '@/lib/utils';
 import { useMotionValue, animate, motion } from 'motion/react';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import useMeasure from 'react-use-measure';
 
 type InfiniteSliderProps = {
@@ -27,7 +27,6 @@ export function InfiniteSlider({
   reverse = false,
   className,
 }: InfiniteSliderProps) {
-  // Calculate duration from speed if speed is provided
   const calculatedDuration = speed ? 100 / speed * 25 : duration;
   const [currentDuration, setCurrentDuration] = useState(calculatedDuration);
   const [ref, { width, height }] = useMeasure();
@@ -36,38 +35,37 @@ export function InfiniteSlider({
   const [key, setKey] = useState(0);
 
   useEffect(() => {
-    let controls;
     const size = direction === 'horizontal' ? width : height;
-    const contentSize = size + gap;
-    
-    // נתחיל מ-0 כדי שהתוכן כבר יהיה במיקום הנכון
-    const from = 0;
-    const to = reverse ? contentSize / 3 : -contentSize / 3;
-
-    if (isTransitioning) {
-      controls = animate(translation, [translation.get(), to], {
-        ease: 'linear',
-        duration:
-          currentDuration * Math.abs((translation.get() - to) / contentSize),
-        onComplete: () => {
-          setIsTransitioning(false);
-          setKey((prevKey) => prevKey + 1);
-        },
-      });
-    } else {
-      controls = animate(translation, [from, to], {
-        ease: 'linear',
-        duration: currentDuration,
-        repeat: Infinity,
-        repeatType: 'loop',
-        repeatDelay: 0,
-        onRepeat: () => {
-          translation.set(from);
-        },
-      });
+    if (!size) {
+      return;
     }
 
-    return controls?.stop;
+    const contentSize = size + gap;
+    const from = reverse ? -contentSize / 2 : 0;
+    const to = reverse ? 0 : -contentSize / 2;
+
+    const controls = isTransitioning
+      ? animate(translation, [translation.get(), to], {
+          ease: 'linear',
+          duration:
+            currentDuration * Math.abs((translation.get() - to) / contentSize),
+          onComplete: () => {
+            setIsTransitioning(false);
+            setKey((prevKey) => prevKey + 1);
+          },
+        })
+      : animate(translation, [from, to], {
+          ease: 'linear',
+          duration: currentDuration,
+          repeat: Infinity,
+          repeatType: 'loop',
+          repeatDelay: 0,
+          onRepeat: () => {
+            translation.set(from);
+          },
+        });
+
+    return controls.stop;
   }, [
     key,
     translation,
@@ -97,7 +95,7 @@ export function InfiniteSlider({
   return (
     <div className={cn('overflow-hidden', className)}>
       <motion.div
-        className='flex w-max'
+        className="flex w-max will-change-transform"
         style={{
           ...(direction === 'horizontal'
             ? { x: translation }
@@ -108,9 +106,6 @@ export function InfiniteSlider({
         ref={ref}
         {...hoverProps}
       >
-        {children}
-        {children}
-        {children}
         {children}
         {children}
       </motion.div>

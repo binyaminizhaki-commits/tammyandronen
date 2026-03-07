@@ -1,0 +1,194 @@
+{
+  "root": "C:/Users/binya/Downloads/Advanced Design Focus",
+  "total_files": 2456,
+  "total_bytes": 607991774,
+  "excluded_names": [
+    ".git",
+    ".next",
+    ".venv",
+    "__pycache__",
+    "build",
+    "dist",
+    "node_modules"
+  ],
+  "extension_summary": [
+    {
+      "extension": "<no-ext>",
+      "files": 2197,
+      "bytes": 305854093
+    },
+    {
+      "extension": ".tsx",
+      "files": 84,
+      "bytes": 328995
+    },
+    {
+      "extension": ".jpg",
+      "files": 73,
+      "bytes": 278351152
+    },
+    {
+      "extension": ".png",
+      "files": 31,
+      "bytes": 16931633
+    },
+    {
+      "extension": ".log",
+      "files": 11,
+      "bytes": 622932
+    },
+    {
+      "extension": ".ts",
+      "files": 10,
+      "bytes": 111642
+    },
+    {
+      "extension": ".jpeg",
+      "files": 10,
+      "bytes": 2507272
+    },
+    {
+      "extension": ".json",
+      "files": 7,
+      "bytes": 201548
+    },
+    {
+      "extension": ".js",
+      "files": 6,
+      "bytes": 19878
+    },
+    {
+      "extension": ".md",
+      "files": 5,
+      "bytes": 11736
+    },
+    {
+      "extension": ".mjs",
+      "files": 5,
+      "bytes": 2882571
+    },
+    {
+      "extension": ".css",
+      "files": 5,
+      "bytes": 11818
+    },
+    {
+      "extension": ".webp",
+      "files": 4,
+      "bytes": 119846
+    },
+    {
+      "extension": ".map",
+      "files": 3,
+      "bytes": 32401
+    },
+    {
+      "extension": ".toml",
+      "files": 2,
+      "bytes": 414
+    },
+    {
+      "extension": ".example",
+      "files": 1,
+      "bytes": 283
+    },
+    {
+      "extension": ".lock",
+      "files": 1,
+      "bytes": 3224
+    },
+    {
+      "extension": ".html",
+      "files": 1,
+      "bytes": 336
+    }
+  ],
+  "largest_files": [
+    {
+      "path": "public/site-images/tammy-ronen/previous-works/agala-reika/image-01.jpg",
+      "size_bytes": 15583117
+    },
+    {
+      "path": "public/site-images/tammy-ronen/previous-works/agala-reika/image-02.jpg",
+      "size_bytes": 15215140
+    },
+    {
+      "path": ".npm-cache-local/_cacache/content-v2/sha512/93/90/8945990a95fee72f38c76ca4dfdbcc0ca150c5edab394962839a09c86e641995bb81c47a5e31a417604b23f32106db3046106d27907f79df314dd1660ee3",
+      "size_bytes": 11705136
+    },
+    {
+      "path": "public/site-images/tammy-ronen/previous-works/pshutot/image-02.jpg",
+      "size_bytes": 10698731
+    },
+    {
+      "path": "public/site-images/tammy-ronen/previous-works/olam-katan/image-02.jpg",
+      "size_bytes": 10679643
+    },
+    {
+      "path": "public/site-images/tammy-ronen/previous-works/agala-reika/image-04.jpg",
+      "size_bytes": 10037457
+    },
+    {
+      "path": "public/site-images/tammy-ronen/previous-works/omnidias/image-03.jpg",
+      "size_bytes": 9774871
+    },
+    {
+      "path": "public/site-images/tammy-ronen/previous-works/omnidias/image-01.jpg",
+      "size_bytes": 9447822
+    },
+    {
+      "path": "public/site-images/tammy-ronen/previous-works/pshutot/image-03.jpg",
+      "size_bytes": 9412194
+    },
+    {
+      "path": "public/site-images/tammy-ronen/previous-works/agala-reika/image-03.jpg",
+      "size_bytes": 9318764
+    },
+    {
+      "path": "public/site-images/tammy-ronen/previous-works/pshutot/image-04.jpg",
+      "size_bytes": 9108222
+    },
+    {
+      "path": "public/site-images/tammy-ronen/repertoire/sfatayim/image-02.jpg",
+      "size_bytes": 8735407
+    },
+    {
+      "path": ".npm-cache-local/_cacache/content-v2/sha512/c4/8c/a3e30a58b3c275f2c54dde64908f0af0edf294a91c3e679ae71cd0b2e5f613c62801cfcd6ee6638c3e616e9b08dc9fcfa5775a69a6d30108b89cd67cfa8a",
+      "size_bytes": 8543424
+    },
+    {
+      "path": ".npm-cache-local/_cacache/content-v2/sha512/dd/97/8bb9ee55f36753f7608d2faaec6a5e88db078ac35718bbeac62a6f1f3820ad2534768187947d8dc5a949c826c3143c81faf284b98e6674362279d3c62913",
+      "size_bytes": 8486648
+    },
+    {
+      "path": ".npm-cache-local/_cacache/content-v2/sha512/26/ef/a0db19f513600a3ba6018718e3f8009cb0f4111d3d1b869825c5c11ffb7bb23d8fbf80bf2f7a788aa28f7adf7e5968fa34ddb7435ccbf4b7e0411406e644",
+      "size_bytes": 8213958
+    },
+    {
+      "path": ".npm-cache-local/_cacache/content-v2/sha512/17/da/bcdd167cc9a0b010dc351a27b3b527e3e66b33ec61b2906fc103e30e51e7ef111ebd2bfb9b8051cd792c94bbae1a9872182860ece2c4423335d58fcb04cb",
+      "size_bytes": 7845432
+    },
+    {
+      "path": ".npm-cache-local/_cacache/content-v2/sha512/d9/0d/b9d1da3fe565d3c315b7ce3b04b8c4afe6c514e13abd5538562a55361182e6e0c07b65e33017e48526eb657583835c5ea3cdce9810e0be55f5f449940fa8",
+      "size_bytes": 7775616
+    },
+    {
+      "path": ".npm-cache-local/_cacache/content-v2/sha512/63/64/fb22c42f24b30204cfa998f6ccddb293ff2609bd5b4b2467c2b384a9f794a3be71488f29db8f3b1aedd6357d1257e3915349f0e4b1b4e9e80196b9d8b20a",
+      "size_bytes": 7713160
+    },
+    {
+      "path": ".npm-cache-local/_cacache/content-v2/sha512/23/84/7191753dd1ca6e7dace118fc95ba36307c89bd364d500c49a222c68fc1d9e6d35dc5ed121c79a09cf3b9001fea140757b3a84bc2ea06b89bb31296ab09bd",
+      "size_bytes": 7685529
+    },
+    {
+      "path": "public/site-images/tammy-ronen/repertoire/sfatayim/image-03.jpg",
+      "size_bytes": 7636062
+    }
+  ],
+  "entrypoints": [
+    ".netlify/functions-serve/contact/package.json",
+    ".netlify/functions-serve/newsletter/package.json",
+    ".netlify/functions-serve/residency/package.json",
+    "package.json"
+  ]
+}

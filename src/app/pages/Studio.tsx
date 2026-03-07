@@ -1,91 +1,127 @@
+import { motion } from "motion/react";
+import {
+  Armchair,
+  CircleOff,
+  DoorOpen,
+  LampFloor,
+  LayoutPanelTop,
+  Projector,
+  Trees,
+  Volume2,
+} from "lucide-react";
+
 import { Navigation } from "../components/Navigation";
 import { UnifiedBackground } from "../components/UnifiedBackground";
-import { motion } from "motion/react";
-import { Maximize2, Sparkles, Volume2, Video, Users, Home, Coffee } from "lucide-react";
-import { useState } from "react";
-import { useTranslation } from "../translations/useTranslation";
+import { ImageWithFallback } from "../components/figma/ImageWithFallback";
+import { ResponsiveImageGrid } from "../components/media/ResponsiveImageGrid";
 import { useLanguage } from "../contexts/LanguageContext";
+import { getAssetByUsage, getAssetsBySection } from "../data/siteImages";
+import { useTranslation } from "../translations/useTranslation";
+
+const studioParagraphs = [
+  "הגענו למקום הזה כמעט במקרה.",
+  "מבנה הספרייה הלאומית הישנה בגבעת רם. חדרים שידעו הרבה מחשבה, מחקר ושקט.",
+  "הסטודיו שלנו נמצא בחלל שבו פעל פעם המכון לפליאוגרפיה, מקום שחקר כתבי יד עתיקים. חוקרים ישבו כאן ופענחו סימנים בני מאות שנים. אנחנו נכנסנו עם גוף וכוריאוגרפיה.",
+  "קראנו למקום \"הארכיון\".",
+  "לא כי אנחנו אוספים מסמכים, אלא כמחווה למה שהיה כאן קודם. מקום של חקירה, של זמן, של עבודה מחוץ ללחץ של הרגע.",
+  "אנחנו, תמי ורונן יצחקי, הקמנו כאן סטודיו ליצירה במחול. מקום לעבוד בו, לחשוב בו, לטעות בו, ולהתחיל שוב.",
+  "זה סטודיו לתהליכים. להופעות, למחקר תנועתי, לחזרות, להתחלות חדשות ולמפגש בין אמנים.",
+  "במהלך השנה אנחנו גם מזמינים יוצרים אחרים להגיע לרזידנסי. הם באים לעבוד כאן תקופה, לפתח רעיונות, לנסות דברים חדשים, לשתף עבודה בתהליך ולפעמים גם להופיע.",
+  "הארכיון הוא פשוט מקום לעבוד בו.",
+  "מקום שבו תנועה פוגשת מחשבה.",
+  "ומקום שבו ההיסטוריה של המבנה פוגשת יצירה עכשווית.",
+];
+
+const studioFeatures = [
+  { title: "רצפת מחול", icon: LayoutPanelTop },
+  { title: "מראות ווילון", icon: CircleOff },
+  { title: "מערכת תאורה", icon: LampFloor },
+  { title: "מקרן", icon: Projector },
+  { title: "סאונד", icon: Volume2 },
+  { title: "מקומות ישיבה", icon: Armchair },
+  { title: "פטיו", icon: Trees },
+  { title: "לובי", icon: DoorOpen },
+];
 
 export function Studio() {
   const { t } = useTranslation();
   const { isRTL } = useLanguage();
-
-  const studioSpecs = [
-    {
-      icon: Maximize2,
-      title: t.studio.specs.size.title,
-      description: t.studio.specs.size.description,
-    },
-    {
-      icon: Sparkles,
-      title: t.studio.specs.floor.title,
-      description: t.studio.specs.floor.description,
-    },
-    {
-      icon: Volume2,
-      title: t.studio.specs.sound.title,
-      description: t.studio.specs.sound.description,
-    },
-    {
-      icon: Video,
-      title: t.studio.specs.lighting.title,
-      description: t.studio.specs.lighting.description,
-    },
-    {
-      icon: Sparkles,
-      title: t.studio.specs.mirrors.title,
-      description: t.studio.specs.mirrors.description,
-    },
-    {
-      icon: Users,
-      title: t.studio.specs.equipment.title,
-      description: t.studio.specs.equipment.description,
-    },
-  ];
+  const galleryLabels = {
+    openGallery: t.gallery.openGallery,
+    images: t.gallery.images,
+    previousImage: t.gallery.previousImage,
+    nextImage: t.gallery.nextImage,
+  };
+  const studioHero = getAssetByUsage("studioHero");
+  const studioGalleryAssets = getAssetsBySection("studio", "studioArchive");
 
   return (
     <div className="min-h-screen pt-24">
       <UnifiedBackground />
       <Navigation />
 
-      <div className="max-w-7xl mx-auto px-6 py-16 space-y-24">
-        {/* Hero Section */}
+      <div className="mx-auto max-w-7xl space-y-24 px-6 py-16">
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className={`space-y-12 ${isRTL ? 'text-right' : 'text-left'}`}
+          className={`grid items-center gap-12 lg:grid-cols-[0.95fr_1.05fr] ${isRTL ? "text-right" : "text-left"}`}
         >
-          <h1 className="text-6xl md:text-7xl">{t.studio.title}</h1>
+          <div className="space-y-6">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl">הארכיון - בית למחול</h1>
+            <p className="max-w-2xl text-xl leading-relaxed text-secondary">{studioParagraphs[0]}</p>
+          </div>
 
-          {/* Hero Image Placeholder */}
-          <div className="aspect-[21/9] rounded-3xl overflow-hidden bg-gradient-to-br from-accent/20 to-secondary/10 backdrop-blur-sm border border-black/5 relative">
-            <div className="absolute inset-0 flex items-center justify-center text-secondary/30 text-lg">
-              {t.studio.galleryPlaceholder}
+          <div className="space-y-4">
+            <div className="overflow-hidden rounded-[2.25rem] border border-black/8 bg-white/75 shadow-2xl shadow-stone-200/25">
+              {studioHero ? (
+                <ImageWithFallback
+                  src={studioHero.src}
+                  alt={studioHero.altHe}
+                  className="aspect-[16/10] w-full object-cover"
+                  loading="eager"
+                  decoding="async"
+                />
+              ) : null}
             </div>
+            {studioHero ? (
+              <p className={`text-sm text-secondary ${isRTL ? "text-right" : "text-left"}`}>
+                {studioHero.captionHe}
+              </p>
+            ) : null}
           </div>
         </motion.section>
 
-        {/* Story Section */}
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className={`max-w-4xl mx-auto space-y-8 ${isRTL ? 'text-right' : 'text-left'}`}
+          className={`mx-auto max-w-4xl space-y-4 rounded-[2rem] border border-black/8 bg-white/65 p-8 shadow-xl shadow-stone-200/20 backdrop-blur-xl ${isRTL ? "text-right" : "text-left"}`}
         >
-          <p className="text-xl text-secondary leading-relaxed">
-            {t.studio.paragraph1}
-          </p>
-          <p className="text-xl text-secondary leading-relaxed">
-            {t.studio.paragraph2}
-          </p>
-          <p className="text-xl text-secondary leading-relaxed">
-            {t.studio.paragraph3}
-          </p>
+          {studioParagraphs.slice(1).map((paragraph) => (
+            <p key={paragraph} className="text-lg leading-relaxed text-secondary">
+              {paragraph}
+            </p>
+          ))}
         </motion.section>
 
-        {/* Gallery Section */}
+        <motion.section
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="space-y-8"
+        >
+          <h2 className="text-center text-4xl md:text-5xl">תמונות של הסטודיו</h2>
+          <ResponsiveImageGrid
+            assets={studioGalleryAssets}
+            dialogTitle="תמונות של הסטודיו"
+            labels={galleryLabels}
+            emphasizeFirst
+          />
+        </motion.section>
+
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -93,26 +129,10 @@ export function Studio() {
           transition={{ duration: 0.8 }}
           className="space-y-12"
         >
-          <h2 className="text-5xl text-center">{t.studio.gallery}</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3, 4, 5, 6].map((index) => (
-              <GalleryItem key={index} index={index} t={t} />
-            ))}
-          </div>
-        </motion.section>
-
-        {/* Specs Section */}
-        <motion.section
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="space-y-12"
-        >
-          <h2 className="text-5xl text-center">{t.studio.facilities}</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {studioSpecs.map((spec, index) => (
-              <SpecCard key={index} spec={spec} index={index} />
+          <h2 className="text-center text-4xl md:text-5xl">מידע על החלל</h2>
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+            {studioFeatures.map((feature, index) => (
+              <FeatureCard key={feature.title} title={feature.title} icon={feature.icon} index={index} />
             ))}
           </div>
         </motion.section>
@@ -121,92 +141,25 @@ export function Studio() {
   );
 }
 
-interface GalleryItemProps {
+interface FeatureCardProps {
+  title: string;
+  icon: React.ComponentType<{ className?: string }>;
   index: number;
-  t: any;
 }
 
-function GalleryItem({ index, t }: GalleryItemProps) {
-  const [isHovered, setIsHovered] = useState(false);
-
+function FeatureCard({ title, icon: Icon, index }: FeatureCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.6, delay: index * 0.1 }}
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
+      transition={{ duration: 0.6, delay: index * 0.06 }}
+      className="rounded-[1.75rem] border border-black/8 bg-white/70 p-6 shadow-lg shadow-stone-200/20 backdrop-blur-xl"
     >
-      <motion.div
-        className="aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 to-secondary/10 backdrop-blur-sm border border-black/5 relative cursor-pointer"
-        whileHover={{ scale: 1.05 }}
-        transition={{ duration: 0.3 }}
-        style={{
-          borderColor: isHovered ? "rgba(200, 169, 106, 0.4)" : "rgba(17, 17, 17, 0.05)",
-          boxShadow: isHovered
-            ? "0 20px 40px rgba(200, 169, 106, 0.2)"
-            : "0 4px 20px rgba(0, 0, 0, 0.04)",
-        }}
-      >
-        <div className="absolute inset-0 flex items-center justify-center text-secondary/30">
-          {t.studio.galleryPlaceholder} {index}
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-}
-
-interface SpecCardProps {
-  spec: {
-    icon: React.ComponentType<{ className?: string }>;
-    title: string;
-    description: string;
-  };
-  index: number;
-}
-
-function SpecCard({ spec, index }: SpecCardProps) {
-  const [isHovered, setIsHovered] = useState(false);
-  const Icon = spec.icon;
-  const { isRTL } = useLanguage();
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6, delay: index * 0.1 }}
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
-    >
-      <motion.div
-        className="p-6 rounded-2xl backdrop-blur-xl border transition-all duration-500 h-full"
-        style={{
-          background: "rgba(255, 255, 255, 0.5)",
-          borderColor: isHovered ? "rgba(200, 169, 106, 0.4)" : "rgba(17, 17, 17, 0.08)",
-          boxShadow: isHovered
-            ? "0 12px 40px rgba(200, 169, 106, 0.2)"
-            : "0 4px 20px rgba(0, 0, 0, 0.04)",
-        }}
-        whileHover={{ y: -6 }}
-      >
-        <div className={`space-y-4 ${isRTL ? 'text-right' : 'text-left'}`}>
-          <motion.div
-            animate={{
-              scale: isHovered ? 1.15 : 1,
-              rotate: isHovered ? 8 : 0,
-            }}
-            transition={{ duration: 0.3, type: "spring", stiffness: 200 }}
-          >
-            <Icon className="w-10 h-10 text-accent" />
-          </motion.div>
-          <h4 className="text-lg font-semibold">{spec.title}</h4>
-          <p className="text-sm text-secondary leading-relaxed">
-            {spec.description}
-          </p>
-        </div>
-      </motion.div>
+      <div className="space-y-4 text-right">
+        <Icon className="h-9 w-9 text-accent" />
+        <h3 className="text-xl font-light text-foreground">{title}</h3>
+      </div>
     </motion.div>
   );
 }

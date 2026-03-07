@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router";
-import { motion } from "motion/react";
-import { useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
+import { Menu, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import logo from "../../assets/archive_black_shakoof_full.png";
 import { LanguageToggle } from "./LanguageToggle";
 import { useTranslation } from "../translations/useTranslation";
@@ -10,22 +11,30 @@ export function Navigation() {
   const location = useLocation();
   const { t } = useTranslation();
   const { isRTL } = useLanguage();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navItems = isRTL
     ? [
         { label: t.nav.home, path: "/" },
         { label: t.nav.tammyRonen, path: "/tammy-ronen" },
-        { label: t.nav.studio, path: "/studio" },
+        { label: "הארכיון", path: "/studio" },
         { label: t.nav.residency, path: "/residency" },
         { label: t.nav.contact, path: "/contact" },
       ]
     : [
         { label: t.nav.home, path: "/" },
         { label: t.nav.tammyRonen, path: "/tammy-ronen" },
-        { label: t.nav.studio, path: "/studio" },
+        { label: "Archive", path: "/studio" },
         { label: t.nav.residency, path: "/residency" },
         { label: t.nav.contact, path: "/contact" },
       ];
+
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location.pathname]);
+
+  const menuLabel = isRTL ? "תפריט" : "Menu";
+  const closeMenuLabel = isRTL ? "סגור" : "Close";
 
   return (
     <motion.nav
@@ -67,21 +76,60 @@ export function Navigation() {
       </div>
 
       {/* Mobile Menu */}
-      <div className="md:hidden px-6 pb-4 space-y-3">
-        <div className="flex items-center justify-center gap-2 bg-background/5 border border-black/10 backdrop-blur-xl py-1 px-1 rounded-full shadow-lg">
-          {navItems.map((item, index) => (
-            <NavItem
-              key={item.path}
-              item={item}
-              index={index}
-              mobile
-              isActive={location.pathname === item.path}
-            />
-          ))}
-        </div>
-        <div className="flex justify-center">
+      <div className="md:hidden px-4 pt-4">
+        <div
+          className={`mx-auto flex max-w-7xl items-center justify-between gap-3 rounded-full border border-black/10 bg-background/70 px-4 py-3 shadow-lg backdrop-blur-xl ${
+            isRTL ? "flex-row-reverse" : ""
+          }`}
+        >
           <LanguageToggle />
+          <motion.button
+            type="button"
+            whileTap={{ scale: 0.96 }}
+            onClick={() => setIsMobileMenuOpen((open) => !open)}
+            className={`inline-flex min-h-11 items-center gap-2 rounded-full border border-black/10 bg-white/70 px-4 py-2 text-sm font-medium text-foreground shadow-sm transition-colors hover:border-accent/30 hover:text-accent ${
+              isRTL ? "flex-row-reverse" : ""
+            }`}
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="mobile-site-nav"
+            aria-label={isMobileMenuOpen ? closeMenuLabel : menuLabel}
+          >
+            {isMobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            <span>{isMobileMenuOpen ? closeMenuLabel : menuLabel}</span>
+          </motion.button>
         </div>
+
+        <AnimatePresence initial={false}>
+          {isMobileMenuOpen ? (
+            <motion.div
+              id="mobile-site-nav"
+              initial={{ opacity: 0, y: -8, height: 0 }}
+              animate={{ opacity: 1, y: 0, height: "auto" }}
+              exit={{ opacity: 0, y: -8, height: 0 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              className="mx-auto mt-3 max-w-7xl overflow-hidden rounded-[2rem] border border-black/10 bg-background/80 shadow-xl backdrop-blur-xl"
+            >
+              <div className="grid gap-2 p-3">
+                <Link
+                  to="/"
+                  className="flex items-center justify-center rounded-[1.5rem] border border-black/6 bg-white/75 p-3"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <img src={logo} alt="ארכיון ריקודים" className="h-10 w-auto" />
+                </Link>
+
+                {navItems.map((item) => (
+                  <MobileNavItem
+                    key={item.path}
+                    item={item}
+                    isActive={location.pathname === item.path}
+                    onSelect={() => setIsMobileMenuOpen(false)}
+                  />
+                ))}
+              </div>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
       </div>
     </motion.nav>
   );
@@ -140,5 +188,30 @@ function NavItem({ item, index, mobile, isActive }: NavItemProps) {
         </motion.div>
       </Link>
     </motion.div>
+  );
+}
+
+interface MobileNavItemProps {
+  item: {
+    label: string;
+    path: string;
+  };
+  isActive: boolean;
+  onSelect: () => void;
+}
+
+function MobileNavItem({ item, isActive, onSelect }: MobileNavItemProps) {
+  return (
+    <Link to={item.path} className="block" onClick={onSelect}>
+      <div
+        className={`flex min-h-11 items-center justify-center rounded-[1.5rem] px-4 py-3 text-sm font-medium transition-all duration-300 ${
+          isActive
+            ? "bg-accent/12 text-accent ring-1 ring-accent/20"
+            : "bg-white/70 text-foreground/85 hover:bg-white/90 hover:text-accent"
+        }`}
+      >
+        {item.label}
+      </div>
+    </Link>
   );
 }

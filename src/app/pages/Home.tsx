@@ -5,9 +5,12 @@ import { Navigation } from "../components/Navigation";
 import { UnifiedBackground } from "../components/UnifiedBackground";
 import { ArrowLeft, ChevronDown, Zap, Heart, Star } from "lucide-react";
 import logo from "../../assets/538b7bcd41901d2112ea7835b15e0f5512afe10a.png";
-import { LogoCloud } from "../components/ui/LogoCloud";
+import { PartnerLogosSection } from "../components/PartnerLogosSection";
 import { useTranslation } from "../translations/useTranslation";
 import { useLanguage } from "../contexts/LanguageContext";
+import { ImageWithFallback } from "../components/figma/ImageWithFallback";
+import { ResponsiveImageGrid } from "../components/media/ResponsiveImageGrid";
+import { getGroupsBySection } from "../data/siteImages";
 
 // Import institution logos
 import choreographers from "../../assets/90199beb5a874cc4fa092a81d81d32b6075a164d.png";
@@ -29,6 +32,15 @@ const partnerLogos = [
 export function Home() {
   const { t } = useTranslation();
   const { isRTL } = useLanguage();
+  const galleryLabels = {
+    openGallery: t.gallery.openGallery,
+    images: t.gallery.images,
+    previousImage: t.gallery.previousImage,
+    nextImage: t.gallery.nextImage,
+  };
+  const studioPreviewAssets = getGroupsBySection("studio", "studioArchive")[0]?.assets.slice(0, 3) ?? [];
+  const [studioHeroAsset, studioAudienceAsset, studioPatioAsset] = studioPreviewAssets;
+  const hasStudioPreviewCollage = Boolean(studioHeroAsset && studioAudienceAsset && studioPatioAsset);
 
   const features = [
     { 
@@ -64,14 +76,14 @@ export function Home() {
         {/* Simplified Background - no animations */}
         <div className="absolute inset-0 pointer-events-none opacity-50">
           <div
-            className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full"
+            className="absolute left-1/2 top-[18%] h-[62vw] w-[62vw] max-h-96 max-w-96 -translate-x-1/2 rounded-full"
             style={{
               background: "linear-gradient(135deg, rgba(200, 169, 106, 0.08) 0%, rgba(200, 169, 106, 0.02) 100%)",
               filter: "blur(80px)",
             }}
           />
           <div
-            className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full"
+            className="absolute bottom-[16%] left-1/2 h-[54vw] w-[54vw] max-h-80 max-w-80 -translate-x-1/2 rounded-full"
             style={{
               background: "linear-gradient(225deg, rgba(119, 119, 119, 0.05) 0%, rgba(119, 119, 119, 0.01) 100%)",
               filter: "blur(60px)",
@@ -117,23 +129,6 @@ export function Home() {
                 animationIterationCount: "infinite",
               }}
             />
-          </motion.div>
-
-          {/* Partner Logos Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="max-w-6xl mx-auto mb-16"
-          >
-            <div className="mb-8">
-              <p className="text-sm text-secondary/80 tracking-widest uppercase font-light"><span className="font-bold">{t.home.partnersLabel}</span></p>
-            </div>
-            
-            {/* Background for logos */}
-            <div className="relative rounded-3xl bg-gradient-to-br from-amber-50/80 via-stone-50/70 to-warmGray-50/60 backdrop-blur-xl border-2 border-amber-300/40 px-8 py-6 shadow-2xl shadow-stone-300/30">
-              <LogoCloud logos={partnerLogos} />
-            </div>
           </motion.div>
 
           {/* Subtitle */}
@@ -236,7 +231,7 @@ export function Home() {
       </section>
 
       {/* About Section */}
-      <section className="relative py-32 px-6">
+      <section className="relative overflow-hidden py-32 px-6">
         <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -254,7 +249,7 @@ export function Home() {
                 {t.home.about.paragraph2}
               </p>
               <div className="pt-4">
-                <Link to="/tammy-ronen">
+                <Link to="/studio">
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.98 }}
@@ -272,26 +267,62 @@ export function Home() {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className="aspect-square rounded-3xl overflow-hidden bg-gradient-to-br from-accent/20 to-secondary/10 backdrop-blur-sm border border-black/5 relative"
+                className="space-y-5 rounded-[2.25rem] border border-black/6 bg-white/60 p-6 shadow-2xl shadow-stone-200/25 backdrop-blur-xl"
               >
-                <div className="absolute inset-0 flex items-center justify-center text-secondary/30 text-lg">
-                  {t.home.about.imagePlaceholder}
+                <div className={`flex items-center justify-between gap-4 ${isRTL ? "flex-row-reverse" : ""}`}>
+                  <span className="inline-flex rounded-full border border-accent/25 bg-white/85 px-4 py-2 text-xs font-medium tracking-[0.2em] text-accent uppercase">
+                    {t.gallery.archivePreview}
+                  </span>
+                  <Link
+                    to="/studio"
+                    className="text-sm font-medium text-accent transition-colors hover:text-accent/80"
+                  >
+                    {t.home.discoverStudio}
+                  </Link>
                 </div>
-              </motion.div>
 
-              {/* Decorative Element */}
-              <motion.div
-                className="absolute -bottom-8 -left-8 w-32 h-32 rounded-full bg-accent/10 backdrop-blur-xl border border-accent/20"
-                animate={{
-                  scale: [1, 1.1, 1],
-                  rotate: [0, 180, 360],
-                }}
-                transition={{
-                  duration: 20,
-                  repeat: Infinity,
-                  ease: "linear",
-                }}
-              />
+                <Link to="/studio" className="group block" aria-label={t.home.discoverStudio}>
+                  {hasStudioPreviewCollage ? (
+                    <div className="grid gap-3">
+                      <div className="overflow-hidden rounded-[1.9rem] border border-black/8 bg-stone-100/80 shadow-lg shadow-stone-200/25">
+                        <ImageWithFallback
+                          src={studioHeroAsset.src}
+                          alt={studioHeroAsset.altHe}
+                          className="aspect-[16/10] w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      </div>
+
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        {[studioAudienceAsset, studioPatioAsset].map((asset) => (
+                          <div
+                            key={asset.id}
+                            className="overflow-hidden rounded-[1.6rem] border border-black/8 bg-stone-100/80 shadow-md shadow-stone-200/20"
+                          >
+                            <ImageWithFallback
+                              src={asset.src}
+                              alt={asset.altHe}
+                              className="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                              loading="lazy"
+                              decoding="async"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <ResponsiveImageGrid
+                      assets={studioPreviewAssets}
+                      dialogTitle={t.gallery.archivePreview}
+                      labels={galleryLabels}
+                      interactive={false}
+                      emphasizeFirst
+                      showCaptions={false}
+                    />
+                  )}
+                </Link>
+              </motion.div>
             </div>
           </motion.div>
         </div>
@@ -301,7 +332,7 @@ export function Home() {
       
 
       {/* CTA Section */}
-      <section className="relative py-32 px-6">
+      <section className="relative overflow-hidden py-32 px-6">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -339,7 +370,7 @@ export function Home() {
 
         {/* Background Decoration */}
         <motion.div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full pointer-events-none"
+          className="absolute left-1/2 top-1/2 h-[82vw] w-[82vw] max-h-[600px] max-w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none"
           style={{
             background: "radial-gradient(circle, rgba(200, 169, 106, 0.05) 0%, transparent 70%)",
             filter: "blur(80px)",
@@ -356,7 +387,17 @@ export function Home() {
         />
       </section>
 
-      {/* Additional Sections Would Go Here */}
+      <section className="relative px-6 pb-24">
+        <motion.div
+          initial={{ opacity: 0, y: 32 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.8 }}
+        >
+          <PartnerLogosSection />
+        </motion.div>
+      </section>
+
       <ScrollIndicator />
     </div>
   );

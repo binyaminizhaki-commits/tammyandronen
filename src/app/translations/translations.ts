@@ -13,6 +13,14 @@ export const translations = {
       residency: 'רזידנסי',
       contact: 'צור קשר',
     },
+    gallery: {
+      openGallery: 'פתחו גלריה',
+      images: 'תמונות',
+      previousImage: 'תמונה קודמת',
+      nextImage: 'תמונה הבאה',
+      archivePreview: 'מבט מתוך הסטודיו',
+      partnerSpotlight: 'שותפים לדרך',
+    },
     // Home Page
     home: {
       heroSubtitle: 'שימור ותיעוד מורשת הריקוד הישראלי והעולמי',
@@ -60,6 +68,9 @@ export const translations = {
       bio3: 'הם מלמדים ומעבירים את הידע שלהם דרך סדנאות, חונכות אישית ותוכניות רזידנסי, ותורמים תרומה משמעותית לקהילת המחול הישראלית והבינלאומית.',
       works: 'יצירות',
       worksPlaceholder: 'יצירות מחול',
+      aboutGallery: 'גלריית אודות',
+      repertoire: 'רפרטואר',
+      previousWorks: 'עבודות קודמות',
     },
     // Studio Page
     studio: {
@@ -186,6 +197,14 @@ export const translations = {
       residency: 'Residency',
       contact: 'Contact',
     },
+    gallery: {
+      openGallery: 'Open gallery',
+      images: 'images',
+      previousImage: 'Previous image',
+      nextImage: 'Next image',
+      archivePreview: 'Studio archive preview',
+      partnerSpotlight: 'Partner spotlight',
+    },
     // Home Page
     home: {
       heroSubtitle: 'Preserving and documenting Israeli and global dance heritage',
@@ -233,6 +252,9 @@ export const translations = {
       bio3: 'They teach and share their knowledge through workshops, personal mentorship, and residency programs, making a significant contribution to the Israeli and international dance community.',
       works: 'Works',
       worksPlaceholder: 'Dance Works',
+      aboutGallery: 'About gallery',
+      repertoire: 'Repertoire',
+      previousWorks: 'Previous works',
     },
     // Studio Page
     studio: {

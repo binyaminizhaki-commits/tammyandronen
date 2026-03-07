@@ -1,0 +1,100 @@
+{
+  "root": "C:/Users/binya/Downloads/Advanced Design Focus/src",
+  "total_files": 96,
+  "total_bytes": 440291,
+  "excluded_names": [
+    ".git",
+    ".next",
+    ".venv",
+    "__pycache__",
+    "assets",
+    "build",
+    "dist",
+    "node_modules"
+  ],
+  "extension_summary": [
+    {
+      "extension": ".tsx",
+      "files": 84,
+      "bytes": 328995
+    },
+    {
+      "extension": ".ts",
+      "files": 6,
+      "bytes": 91936
+    },
+    {
+      "extension": ".css",
+      "files": 5,
+      "bytes": 11818
+    },
+    {
+      "extension": ".md",
+      "files": 1,
+      "bytes": 7542
+    }
+  ],
+  "largest_files": [
+    {
+      "path": "app/data/siteImages.ts",
+      "size_bytes": 71805
+    },
+    {
+      "path": "app/components/Footer.tsx",
+      "size_bytes": 25977
+    },
+    {
+      "path": "app/components/ui/sidebar.tsx",
+      "size_bytes": 21663
+    },
+    {
+      "path": "app/translations/translations.ts",
+      "size_bytes": 18962
+    },
+    {
+      "path": "app/pages/TammyRonen.tsx",
+      "size_bytes": 17331
+    },
+    {
+      "path": "app/pages/Home.tsx",
+      "size_bytes": 16194
+    },
+    {
+      "path": "app/components/AccessibilityMenu.tsx",
+      "size_bytes": 13254
+    },
+    {
+      "path": "app/pages/Contact.tsx",
+      "size_bytes": 12327
+    },
+    {
+      "path": "app/components/ui/chart.tsx",
+      "size_bytes": 9852
+    },
+    {
+      "path": "app/components/ui/menubar.tsx",
+      "size_bytes": 8426
+    },
+    {
+      "path": "app/components/ui/dropdown-menu.tsx",
+      "size_bytes": 8313
+    },
+    {
+      "path": "app/components/ui/context-menu.tsx",
+      "size_bytes": 8251
+    },
+    {
+      "path": "app/pages/Residency.tsx",
+      "size_bytes": 7895
+    },
+    {
+      "path": "imports/dance-archive-spec.md",
+      "size_bytes": 7542
+    },
+    {
+      "path": "contexts/LanguageContext.tsx",
+      "size_bytes": 7533
+    }
+  ],
+  "entrypoints": []
+}

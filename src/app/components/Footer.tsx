@@ -1,20 +1,14 @@
 ﻿import { useState } from "react";
-import { X, Instagram, Facebook, Youtube, Mail, MapPin, Phone } from "lucide-react";
+import { X, Mail, MapPin, Phone } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { Link } from "react-router";
 
 type LegalSection = "general" | "privacy" | "terms" | "copyright" | null;
 
-const socialLinks = [
-  { icon: Instagram, href: "https://instagram.com", label: "Instagram" },
-  { icon: Facebook, href: "https://facebook.com", label: "Facebook" },
-  { icon: Youtube, href: "https://youtube.com", label: "YouTube" },
-];
-
 const quickLinks = [
   { label: "בית", path: "/" },
   { label: "תמי ורונן", path: "/tammy-ronen" },
-  { label: "סטודיו", path: "/studio" },
+  { label: "הארכיון - בית למחול", path: "/studio" },
   { label: "רזידנסי", path: "/residency" },
   { label: "צור קשר", path: "/contact" },
 ];
@@ -23,14 +17,54 @@ export function Footer() {
   const [activeSection, setActiveSection] = useState<LegalSection>(null);
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const normalizedEmail = email.trim().toLowerCase();
+
+    setSuccessMessage("");
+    setErrorMessage("");
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+      setErrorMessage("נא להזין כתובת דוא\"ל תקינה.");
+      return;
+    }
+
     setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setIsSubmitting(false);
-    alert("תודה על ההרשמה לניוזלטר!");
-    setEmail("");
+
+    try {
+      const response = await fetch("/.netlify/functions/newsletter", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: normalizedEmail,
+          name: "",
+          source: "website",
+          pageUrl: window.location.href,
+        }),
+      });
+
+      const result = (await response.json().catch(() => null)) as
+        | { already?: boolean; message?: string }
+        | null;
+
+      if (!response.ok) {
+        throw new Error(result?.message || "לא ניתן להשלים הרשמה כרגע.");
+      }
+
+      setEmail("");
+      setSuccessMessage(result?.already ? "כתובת זו כבר רשומה." : "תודה על ההרשמה לניוזלטר!");
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error ? error.message : "אירעה שגיאה בהרשמה. נסו שוב מאוחר יותר.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -41,26 +75,10 @@ export function Footer() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
             {/* About Section */}
             <div className="space-y-4" dir="rtl">
-              <h3 className="text-xl font-light mb-4 text-[var(--footer-text)]">ארכיון ריקודים</h3>
+              <h3 className="text-xl font-light mb-4 text-[var(--footer-text)]">הארכיון - בית למחול</h3>
               <p className="text-sm text-[var(--footer-muted)] leading-relaxed">
-                שימור ותיעוד מורשת המחול הישראלי והעולמי באמצעות טכנולוגיה דיגיטלית מתקדמת
+                סטודיו ליצירה במחול, רזידנסי, מחקר תנועתי ומפגש בין אמנים בירושלים.
               </p>
-              <div className="flex gap-3 pt-2">
-                {socialLinks.map((social, index) => (
-                  <motion.a
-                    key={index}
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    whileHover={{ scale: 1.1, y: -2 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="w-10 h-10 rounded-full bg-[var(--footer-surface)] border border-[var(--footer-border)] flex items-center justify-center text-[var(--footer-text)] hover:bg-[var(--footer-link-hover)] hover:text-[var(--footer-bg)] hover:border-[var(--footer-link-hover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--footer-focus)] transition-colors"
-                    aria-label={social.label}
-                  >
-                    <social.icon className="w-4 h-4" />
-                  </motion.a>
-                ))}
-              </div>
             </div>
 
             {/* Quick Links */}
@@ -109,9 +127,9 @@ export function Footer() {
 
             {/* Newsletter */}
             <div className="space-y-4" dir="rtl">
-              <h3 className="text-xl font-light mb-4 text-[var(--footer-text)]">הרשמה לעדכונים</h3>
+              <h3 className="text-xl font-light mb-4 text-[var(--footer-text)]">לחדשות ועדכונים</h3>
               <p className="text-sm text-[var(--footer-muted)] mb-4">
-                קבלו עדכונים על מופעים, רזידנסים וסדנאות
+                השאירו מייל ונצרף אתכם לרשימת העדכונים / ניוזלטר.
               </p>
               <form onSubmit={handleNewsletterSubmit} className="space-y-3">
                 <input
@@ -131,6 +149,8 @@ export function Footer() {
                 >
                   {isSubmitting ? "שולח..." : "הרשמה"}
                 </motion.button>
+                {successMessage ? <p className="text-xs text-green-700">{successMessage}</p> : null}
+                {errorMessage ? <p className="text-xs text-red-600">{errorMessage}</p> : null}
               </form>
             </div>
           </div>
@@ -165,7 +185,7 @@ export function Footer() {
                 </button>
               </div>
               <div className="text-sm text-[var(--footer-muted)]">
-                © 2026 ארכיון ריקודים. כל הזכויות שמורות.
+                © 2026 תמי ורונן יצחקי. כל הזכויות שמורות.
               </div>
             </div>
           </div>
@@ -224,7 +244,7 @@ function GeneralContent() {
       <section>
         <h3 className="text-xl mb-4">פרטי המפעיל</h3>
         <p className="text-secondary leading-relaxed">
-          <strong>שם המפעיל:</strong> תמי קליינמן ורונן יצחקי<br />
+          <strong>שם המפעיל:</strong> תמי ורונן יצחקי<br />
           <strong>כתובת:</strong> האוניברסיטה העברית, קמפוס ספרא, בניין הספרייה הישנה, ירושלים<br />
           <strong>טלפון:</strong> <a href="tel:+972506262730" className="text-accent hover:underline">050-6262730</a><br />
           <strong>דוא"ל:</strong> <a href="mailto:tammykleinman@gmail.com" className="text-accent hover:underline">tammykleinman@gmail.com</a>
@@ -247,7 +267,7 @@ function GeneralContent() {
       <section>
         <h3 className="text-xl mb-4">פרטי רכז/ת נגישות</h3>
         <p className="text-secondary leading-relaxed">
-          <strong>שם:</strong> תמי קליינמן<br />
+          <strong>שם:</strong> תמי יצחקי<br />
           <strong>טלפון:</strong> <a href="tel:+972506262730" className="text-accent hover:underline">050-6262730</a><br />
           <strong>דוא"ל:</strong> <a href="mailto:tammykleinman@gmail.com" className="text-accent hover:underline">tammykleinman@gmail.com</a>
         </p>
@@ -350,7 +370,7 @@ function TermsContent() {
         
         <div className="space-y-4 mb-8">
           <p className="text-secondary leading-relaxed">
-            ברוכים הבאים לאתר ארכיון הריקוד של תמי קליינמן ורונן יצחקי. השימוש באתר זה כפוף לתנאים הבאים.
+            ברוכים הבאים לאתר של תמי ורונן יצחקי. השימוש באתר זה כפוף לתנאים הבאים.
           </p>
           
           <h4 className="text-lg mt-6 mb-3">קבלת התנאים</h4>
@@ -382,7 +402,7 @@ function TermsContent() {
         <div className="border-t border-black/10 pt-6 space-y-4" dir="ltr">
           <h4 className="text-lg mb-3">English Version</h4>
           <p className="text-secondary leading-relaxed">
-            Welcome to the Dance Archive website of Tammy Kleinman and Ronen Izhaki. Use of this site is subject to the following terms.
+            Welcome to the website of Tammy and Ronen Yitzhaki. Use of this site is subject to the following terms.
           </p>
           
           <h5 className="font-medium mt-4 mb-2">Acceptance of Terms</h5>
@@ -423,10 +443,10 @@ function CopyrightContent() {
         
         <div className="space-y-4 mb-6">
           <p className="text-secondary leading-relaxed">
-            © 2026 תמי קליינמן ורונן יצחקי. כל הזכויות שמורות.
+            © 2026 תמי ורונן יצחקי. כל הזכויות שמורות.
           </p>
           <p className="text-secondary leading-relaxed">
-            כל התכנים באתר זה, כולל טקסטים, תמונות, סרטונים, עיצוב גרפי ולוגו, הם רכושם הבלעדי של תמי קליינמן ורונן יצחקי ומוגנים על פי חוקי זכויות יוצרים בינלאומיים וישראליים.
+            כל התכנים באתר זה, כולל טקסטים, תמונות, סרטונים, עיצוב גרפי ולוגו, הם רכושם הבלעדי של תמי ורונן יצחקי ומוגנים על פי חוקי זכויות יוצרים בינלאומיים וישראליים.
           </p>
           <p className="text-secondary leading-relaxed">
             אין להעתיק, לשכפל, להפיץ, לשדר, להציג בפומבי, לבצע, לפרסם, לרשות או לעשות כל שימוש מסחרי בכל חלק מהתכנים ללא קבלת אישור מפורש בכתב מהבעלים.
@@ -441,10 +461,10 @@ function CopyrightContent() {
 
         <div className="border-t border-black/10 pt-6 space-y-4" dir="ltr">
           <p className="text-secondary leading-relaxed">
-            ֲ© 2026 Tammy Kleinman and Ronen Izhaki. All rights reserved.
+            © 2026 Tammy and Ronen Yitzhaki. All rights reserved.
           </p>
           <p className="text-secondary leading-relaxed">
-            All content on this website, including text, images, videos, graphic design, and logo, is the exclusive property of Tammy Kleinman and Ronen Izhaki and is protected under international and Israeli copyright laws.
+            All content on this website, including text, images, videos, graphic design, and logo, is the exclusive property of Tammy and Ronen Yitzhaki and is protected under international and Israeli copyright laws.
           </p>
           <p className="text-secondary leading-relaxed">
             You may not copy, reproduce, distribute, transmit, publicly display, perform, publish, license, or make any commercial use of any part of the content without obtaining express written permission from the owners.

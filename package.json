@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "dev": "vite"
+    "dev": "npx netlify dev --command \"npm run dev:vite\" --target-port 5177 --port 8888",
+    "dev:vite": "vite --port 5177 --strictPort",
+    "import:site-images": "node scripts/import-site-images.mjs"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",
@@ -43,6 +45,7 @@
     "clsx": "2.1.1",
     "cmdk": "1.1.1",
     "date-fns": "3.6.0",
+    "embla-carousel-auto-scroll": "^8.6.0",
     "embla-carousel-react": "8.6.0",
     "input-otp": "1.4.2",
     "lucide-react": "0.487.0",
