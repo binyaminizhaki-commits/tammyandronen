@@ -164,6 +164,19 @@
     font-size: var(--font-size);
   }
 
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  [data-slot="dialog-title"],
+  [data-slot="drawer-title"],
+  [data-slot="sheet-title"],
+  [data-slot="alert-dialog-title"] {
+    font-family: var(--font-display);
+  }
+
   h1 {
     font-family: var(--font-display);
     font-size: 3.5rem;
@@ -194,19 +207,42 @@
     line-height: 1.5;
   }
 
+  h5 {
+    font-size: 1.1rem;
+    font-weight: 500;
+    line-height: 1.45;
+  }
+
+  h6 {
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.45;
+  }
+
   label {
+    font-family: var(--font-body);
     font-size: var(--text-base);
     font-weight: var(--font-weight-medium);
     line-height: 1.5;
   }
 
   button {
+    font-family: var(--font-body);
     font-size: var(--text-base);
     font-weight: var(--font-weight-medium);
     line-height: 1.5;
   }
 
   input {
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-normal);
+    line-height: 1.5;
+  }
+
+  textarea,
+  select {
+    font-family: var(--font-body);
     font-size: var(--text-base);
     font-weight: var(--font-weight-normal);
     line-height: 1.5;
