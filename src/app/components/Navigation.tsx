@@ -18,6 +18,7 @@ export function Navigation() {
         { label: t.nav.home, path: "/" },
         { label: t.nav.tammyRonen, path: "/tammy-ronen" },
         { label: "הארכיון", path: "/studio" },
+        { label: "אירועים", path: "/events" },
         { label: t.nav.residency, path: "/residency" },
         { label: t.nav.contact, path: "/contact" },
       ]
@@ -25,6 +26,7 @@ export function Navigation() {
         { label: t.nav.home, path: "/" },
         { label: t.nav.tammyRonen, path: "/tammy-ronen" },
         { label: "Archive", path: "/studio" },
+        { label: "Events", path: "/events" },
         { label: t.nav.residency, path: "/residency" },
         { label: t.nav.contact, path: "/contact" },
       ];
@@ -43,7 +45,6 @@ export function Navigation() {
       transition={{ duration: 0.6, ease: "easeOut" }}
       className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
     >
-      {/* Desktop Navigation */}
       <div className="hidden md:flex max-w-7xl mx-auto px-6 py-5 items-center">
         <div className="w-44 flex justify-start">
           <Link to="/">
@@ -75,7 +76,6 @@ export function Navigation() {
         </div>
       </div>
 
-      {/* Mobile Menu */}
       <div className="md:hidden px-4 pt-4">
         <div
           className={`mx-auto flex max-w-7xl items-center justify-between gap-3 rounded-full border border-black/10 bg-background/70 px-4 py-3 shadow-lg backdrop-blur-xl ${

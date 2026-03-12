@@ -9,6 +9,7 @@ const quickLinks = [
   { label: "בית", path: "/" },
   { label: "תמי ורונן", path: "/tammy-ronen" },
   { label: "הארכיון - בית למחול", path: "/studio" },
+  { label: "אירועים", path: "/events" },
   { label: "רזידנסי", path: "/residency" },
   { label: "צור קשר", path: "/contact" },
 ];

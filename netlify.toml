@@ -6,3 +6,8 @@
   command = "npm run dev:vite"
   targetPort = 5177
   port = 8888
+
+[[redirects]]
+  from = "/api/events"
+  to = "/.netlify/functions/events"
+  status = 200

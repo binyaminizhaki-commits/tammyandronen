@@ -6,11 +6,13 @@ import { UnifiedBackground } from "../components/UnifiedBackground";
 import { ArrowLeft, ChevronDown, Zap, Heart, Star } from "lucide-react";
 import logo from "../../assets/538b7bcd41901d2112ea7835b15e0f5512afe10a.png";
 import { PartnerLogosSection } from "../components/PartnerLogosSection";
+import { EventsShowcase } from "../components/events/EventsShowcase";
 import { useTranslation } from "../translations/useTranslation";
 import { useLanguage } from "../contexts/LanguageContext";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { ResponsiveImageGrid } from "../components/media/ResponsiveImageGrid";
 import { getGroupsBySection } from "../data/siteImages";
+import { useEvents } from "../events/useEvents";
 
 // Import institution logos
 import choreographers from "../../assets/90199beb5a874cc4fa092a81d81d32b6075a164d.png";
@@ -32,6 +34,8 @@ const partnerLogos = [
 export function Home() {
   const { t } = useTranslation();
   const { isRTL } = useLanguage();
+  const upcomingEvents = useEvents();
+  const archiveEvents = useEvents({ archive: true, limit: 3 });
   const galleryLabels = {
     openGallery: t.gallery.openGallery,
     images: t.gallery.images,
@@ -41,6 +45,8 @@ export function Home() {
   const studioPreviewAssets = getGroupsBySection("studio", "studioArchive")[0]?.assets.slice(0, 3) ?? [];
   const [studioHeroAsset, studioAudienceAsset, studioPatioAsset] = studioPreviewAssets;
   const hasStudioPreviewCollage = Boolean(studioHeroAsset && studioAudienceAsset && studioPatioAsset);
+  const shouldShowEventsFallback =
+    !upcomingEvents.loading && !upcomingEvents.error && upcomingEvents.events.length === 0;
 
   const features = [
     { 
@@ -328,8 +334,17 @@ export function Home() {
         </div>
       </section>
 
-      {/* Stats Section */}
-      
+      {shouldShowEventsFallback ? (
+        <EventsShowcase
+          mode="home"
+          upcoming={upcomingEvents.events}
+          archive={archiveEvents.events}
+          upcomingLoading={upcomingEvents.loading}
+          upcomingError={upcomingEvents.error}
+          archiveLoading={archiveEvents.loading}
+          archiveError={archiveEvents.error}
+        />
+      ) : null}
 
       {/* CTA Section */}
       <section className="relative overflow-hidden py-32 px-6">
