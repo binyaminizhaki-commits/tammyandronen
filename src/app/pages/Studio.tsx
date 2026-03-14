@@ -12,10 +12,9 @@ import {
 
 import { Navigation } from "../components/Navigation";
 import { UnifiedBackground } from "../components/UnifiedBackground";
-import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { ResponsiveImageGrid } from "../components/media/ResponsiveImageGrid";
 import { useLanguage } from "../contexts/LanguageContext";
-import { getAssetByUsage, getAssetsBySection } from "../data/siteImages";
+import { getAssetsBySection } from "../data/siteImages";
 import { useTranslation } from "../translations/useTranslation";
 
 const studioParagraphs = [
@@ -52,11 +51,10 @@ export function Studio() {
     previousImage: t.gallery.previousImage,
     nextImage: t.gallery.nextImage,
   };
-  const studioHero = getAssetByUsage("studioHero");
   const studioGalleryAssets = getAssetsBySection("studio", "studioArchive");
 
   return (
-    <div className="min-h-screen pt-24">
+    <div className="min-h-screen pt-20 md:pt-24">
       <UnifiedBackground />
       <Navigation />
 
@@ -65,30 +63,11 @@ export function Studio() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className={`grid items-center gap-12 lg:grid-cols-[0.95fr_1.05fr] ${isRTL ? "text-right" : "text-left"}`}
+          className={`mx-auto max-w-4xl space-y-6 ${isRTL ? "text-right" : "text-left"}`}
         >
           <div className="space-y-6">
             <h1 className="text-5xl md:text-6xl lg:text-7xl">הארכיון - בית למחול</h1>
             <p className="max-w-2xl text-xl leading-relaxed text-secondary">{studioParagraphs[0]}</p>
-          </div>
-
-          <div className="space-y-4">
-            <div className="overflow-hidden rounded-[2.25rem] border border-black/8 bg-white/75 shadow-2xl shadow-stone-200/25">
-              {studioHero ? (
-                <ImageWithFallback
-                  src={studioHero.src}
-                  alt={studioHero.altHe}
-                  className="aspect-[16/10] w-full object-cover"
-                  loading="eager"
-                  decoding="async"
-                />
-              ) : null}
-            </div>
-            {studioHero ? (
-              <p className={`text-sm text-secondary ${isRTL ? "text-right" : "text-left"}`}>
-                {studioHero.captionHe}
-              </p>
-            ) : null}
           </div>
         </motion.section>
 

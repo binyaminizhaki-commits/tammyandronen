@@ -13,6 +13,8 @@ interface ResponsiveImageGridProps {
   interactive?: boolean;
   emphasizeFirst?: boolean;
   showCaptions?: boolean;
+  lightboxShowDescription?: boolean;
+  lightboxShowThumbnailCaptions?: boolean;
 }
 
 export function ResponsiveImageGrid({
@@ -23,6 +25,8 @@ export function ResponsiveImageGrid({
   interactive = true,
   emphasizeFirst = false,
   showCaptions = true,
+  lightboxShowDescription = true,
+  lightboxShowThumbnailCaptions = true,
 }: ResponsiveImageGridProps) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
@@ -77,6 +81,8 @@ export function ResponsiveImageGrid({
           assets={assets}
           title={dialogTitle}
           labels={labels}
+          showDescription={lightboxShowDescription}
+          showThumbnailCaptions={lightboxShowThumbnailCaptions}
           open={activeIndex !== null}
           initialIndex={activeIndex}
           onOpenChange={(open) => {

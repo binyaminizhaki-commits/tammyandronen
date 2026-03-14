@@ -1,11 +1,10 @@
 import { motion } from "motion/react";
-import { useState } from "react";
 
-import { Navigation } from "../components/Navigation";
-import { UnifiedBackground } from "../components/UnifiedBackground";
+import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { GalleryGroupCard } from "../components/media/GalleryGroupCard";
 import { ResponsiveImageGrid } from "../components/media/ResponsiveImageGrid";
-import { ImageWithFallback } from "../components/figma/ImageWithFallback";
+import { Navigation } from "../components/Navigation";
+import { UnifiedBackground } from "../components/UnifiedBackground";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { useLanguage } from "../contexts/LanguageContext";
 import {
@@ -55,11 +54,10 @@ const repertoireTitles: Record<(typeof repertoireOrder)[number], string> = {
   "meta-tammy": "מטא-תמי",
 };
 
-const workMetadata = ["4 סטילס", "וידאו", "טקסט בקרוב"];
 const workSectionNote = "לכל עבודה 4 סטילס, וידאו וטקסט. טקסט נכתוב בקרוב.";
 
 export function TammyRonen() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const { isRTL } = useLanguage();
   const galleryLabels = {
     openGallery: t.gallery.openGallery,
@@ -70,8 +68,14 @@ export function TammyRonen() {
 
   const tammyProfile = getAssetByUsage("tammyProfile");
   const ronenProfile = getAssetByUsage("ronenProfile");
+  const duoPortrait = getAssetsBySection("tammyRonen", "about").find((asset) =>
+    asset.captionHe.includes("פנים בפנים"),
+  );
   const aboutGalleryAssets = getAssetsBySection("tammyRonen", "about").filter(
-    (asset) => asset.usage !== "tammyProfile" && asset.usage !== "ronenProfile",
+    (asset) =>
+      asset.usage !== "tammyProfile" &&
+      asset.usage !== "ronenProfile" &&
+      asset.id !== duoPortrait?.id,
   );
   const repertoireGroups = repertoireOrder
     .map((slug) => getGroupsBySection("tammyRonen", "repertoire").find((group) => group.slug === slug))
@@ -82,7 +86,7 @@ export function TammyRonen() {
   );
 
   return (
-    <div className="min-h-screen pt-24">
+    <div className="min-h-screen pt-20 md:pt-24">
       <UnifiedBackground />
       <Navigation />
 
@@ -91,38 +95,17 @@ export function TammyRonen() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className={`space-y-8 ${isRTL ? "text-right" : "text-left"}`}
+          className={`space-y-4 ${isRTL ? "text-right" : "text-left"}`}
         >
-          <div className="space-y-4">
-            <h1 className="text-5xl md:text-6xl lg:text-7xl">תמי ורונן יצחקי</h1>
-            <p className="max-w-4xl text-xl leading-relaxed text-secondary">
-              אנחנו תמי ורונן יצחקי, זוג בחיים ועל הבמה, הורים לשלושה, יוצרים יחד מאז 2007.
-            </p>
-          </div>
+          <h1 className="text-5xl md:text-6xl lg:text-7xl">תמי ורונן יצחקי</h1>
+          <p className="text-lg text-secondary">
+            {language === "en" ? "Tammy & Ronen Izhaki" : "Tammy & Ronen Izhaki"}
+          </p>
         </motion.section>
 
-        <motion.section
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="grid gap-16 md:grid-cols-2"
-        >
-          <ProfileCard
-            asset={tammyProfile}
-            name="תמי יצחקי"
-            role="אמא לשלושה, יוצרת מחול ומנהלת אמנותית."
-            index={0}
-          />
-          <ProfileCard
-            asset={ronenProfile}
-            name="רונן יצחקי"
-            role="כוריאוגרף, מורה ואוצר."
-            index={1}
-          />
-        </motion.section>
-
-        <TextSection title="אודות" paragraphs={duoParagraphs} isRTL={isRTL} />
+        <BiographySplitSection asset={duoPortrait ?? null} title="תמי ורונן יצחקי" paragraphs={duoParagraphs} />
+        <BiographySplitSection asset={tammyProfile} title="תמי יצחקי" paragraphs={tammyParagraphs} />
+        <BiographySplitSection asset={ronenProfile} title="רונן יצחקי" paragraphs={ronenParagraphs} />
 
         <motion.section
           initial={{ opacity: 0, y: 30 }}
@@ -133,7 +116,7 @@ export function TammyRonen() {
         >
           <div className={`flex items-center justify-between gap-4 ${isRTL ? "flex-row-reverse" : ""}`}>
             <h2 className="text-4xl md:text-5xl">תמונות</h2>
-            <span className="rounded-full border border-accent/20 bg-white/80 px-3 py-1 text-sm text-secondary">
+            <span className="text-sm text-secondary">
               {aboutGalleryAssets.length} {t.gallery.images}
             </span>
           </div>
@@ -142,13 +125,10 @@ export function TammyRonen() {
             dialogTitle="תמי ורונן יצחקי"
             labels={galleryLabels}
             emphasizeFirst
+            lightboxShowDescription={false}
+            lightboxShowThumbnailCaptions={false}
           />
         </motion.section>
-
-        <div className="grid gap-12 lg:grid-cols-2">
-          <TextSection title="תמי יצחקי" paragraphs={tammyParagraphs} isRTL={isRTL} />
-          <TextSection title="רונן יצחקי" paragraphs={ronenParagraphs} isRTL={isRTL} />
-        </div>
 
         <motion.section
           initial={{ opacity: 0, y: 30 }}
@@ -164,11 +144,17 @@ export function TammyRonen() {
 
           <Tabs defaultValue="repertoire" className="space-y-8">
             <div className="flex justify-center">
-              <TabsList className="h-auto rounded-full bg-white/75 p-1.5 backdrop-blur-xl">
-                <TabsTrigger className="rounded-full px-5 py-2.5" value="repertoire">
+              <TabsList className="h-auto border-b border-black/10 bg-transparent p-0">
+                <TabsTrigger
+                  className="rounded-none border-b-2 border-transparent px-5 py-3 data-[state=active]:border-accent data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+                  value="repertoire"
+                >
                   רפרטואר
                 </TabsTrigger>
-                <TabsTrigger className="rounded-full px-5 py-2.5" value="previousWorks">
+                <TabsTrigger
+                  className="rounded-none border-b-2 border-transparent px-5 py-3 data-[state=active]:border-accent data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+                  value="previousWorks"
+                >
                   עבודות קודמות
                 </TabsTrigger>
               </TabsList>
@@ -182,7 +168,6 @@ export function TammyRonen() {
                     group={group}
                     labels={galleryLabels}
                     title={repertoireTitles[group.slug as keyof typeof repertoireTitles] ?? group.titleHe}
-                    metadata={workMetadata}
                   />
                 ))}
               </div>
@@ -196,7 +181,7 @@ export function TammyRonen() {
               </div>
               <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                 {previousWorksGroups.map((group) => (
-                  <GalleryGroupCard key={group.id} group={group} labels={galleryLabels} metadata={workMetadata} />
+                  <GalleryGroupCard key={group.id} group={group} labels={galleryLabels} />
                 ))}
               </div>
             </TabsContent>
@@ -207,64 +192,34 @@ export function TammyRonen() {
   );
 }
 
-interface TextSectionProps {
+interface BiographySplitSectionProps {
+  asset: SiteImageAsset | null;
   title: string;
   paragraphs: string[];
-  isRTL: boolean;
 }
 
-function TextSection({ title, paragraphs, isRTL }: TextSectionProps) {
+function BiographySplitSection({ asset, title, paragraphs }: BiographySplitSectionProps) {
   return (
     <motion.section
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.8 }}
-      className={`space-y-6 rounded-[2rem] border border-black/8 bg-white/65 p-8 shadow-xl shadow-stone-200/20 backdrop-blur-xl ${isRTL ? "text-right" : "text-left"}`}
+      className="grid items-start gap-8 border border-black/8 bg-white/68 p-5 shadow-sm backdrop-blur-xl md:p-8 lg:grid-cols-[1.05fr_0.95fr]"
     >
-      <h2 className="text-4xl md:text-5xl">{title}</h2>
-      <div className="space-y-4">
-        {paragraphs.map((paragraph) => (
-          <p key={paragraph} className="text-lg leading-relaxed text-secondary">
-            {paragraph}
-          </p>
-        ))}
+      <div className="order-2 space-y-5 text-right lg:order-1">
+        <h2 className="text-4xl md:text-5xl">{title}</h2>
+        <div className="space-y-4">
+          {paragraphs.map((paragraph) => (
+            <p key={paragraph} className="text-lg leading-relaxed text-secondary">
+              {paragraph}
+            </p>
+          ))}
+        </div>
       </div>
-    </motion.section>
-  );
-}
 
-interface ProfileCardProps {
-  asset: SiteImageAsset | null;
-  name: string;
-  role: string;
-  index: number;
-}
-
-function ProfileCard({ asset, name, role, index }: ProfileCardProps) {
-  const [isHovered, setIsHovered] = useState(false);
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.8 }}
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
-    >
-      <motion.div
-        className="relative overflow-hidden rounded-3xl border backdrop-blur-xl transition-all duration-500"
-        style={{
-          background: "rgba(255, 255, 255, 0.5)",
-          borderColor: isHovered ? "rgba(200, 169, 106, 0.4)" : "rgba(17, 17, 17, 0.08)",
-          boxShadow: isHovered
-            ? "0 20px 60px rgba(200, 169, 106, 0.2)"
-            : "0 8px 30px rgba(0, 0, 0, 0.05)",
-        }}
-        whileHover={{ y: -10 }}
-      >
-        <div className="relative aspect-[3/4] bg-gradient-to-br from-accent/20 to-secondary/10">
+      <div className="order-1 overflow-hidden border border-black/8 bg-stone-100 lg:order-2">
+        <div className="relative aspect-[4/5]">
           {asset ? (
             <ImageWithFallback
               src={asset.src}
@@ -275,28 +230,12 @@ function ProfileCard({ asset, name, role, index }: ProfileCardProps) {
             />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center text-lg text-secondary/30">
-              {name}
+              {title}
             </div>
           )}
         </div>
-
-        <div className="space-y-2 p-6 text-center">
-          <h3 className="text-2xl font-light">{name}</h3>
-          <p className="text-secondary">{role}</p>
-          {asset ? <p className="text-sm text-secondary/80">{asset.captionHe}</p> : null}
-        </div>
-
-        <motion.div
-          className="pointer-events-none absolute inset-0"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: isHovered ? 1 : 0 }}
-          transition={{ duration: 0.3 }}
-          style={{
-            background: "radial-gradient(circle at center, rgba(200, 169, 106, 0.1) 0%, transparent 70%)",
-          }}
-        />
-      </motion.div>
-    </motion.div>
+      </div>
+    </motion.section>
   );
 }
 

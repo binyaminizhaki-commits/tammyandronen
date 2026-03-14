@@ -9,7 +9,7 @@ export function Events() {
   const archive = useEvents({ archive: true });
 
   return (
-    <div className="min-h-screen pt-24">
+    <div className="min-h-screen pt-20 md:pt-24">
       <UnifiedBackground />
       <Navigation />
 

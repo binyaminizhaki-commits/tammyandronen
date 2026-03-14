@@ -175,7 +175,7 @@ export function AccessibilityMenu() {
               <div className="sticky top-0 bg-white border-b border-black/10 px-6 py-4 rounded-t-3xl flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Accessibility className="w-6 h-6 text-accent" />
-                  <h2 className="text-xl font-medium text-foreground">הצהרת נגישות</h2>
+                  <h2 className="text-xl font-medium text-foreground">תפריט נגישות</h2>
                 </div>
                 <button
                   onClick={() => setIsOpen(false)}

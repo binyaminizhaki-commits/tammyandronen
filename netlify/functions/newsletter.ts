@@ -20,11 +20,16 @@ type NotionDatabase = {
   properties?: Record<string, NotionProperty>;
 };
 
+type NotionPageResult = {
+  id?: string;
+};
+
 type NotionQueryResult = {
-  results?: unknown[];
+  results?: NotionPageResult[];
 };
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_REGEX = /^[+]?[\d\s\-()]{8,}$/;
 
 const jsonResponse = (statusCode: number, payload: Record<string, unknown>): NetlifyResponse => ({
   statusCode,
@@ -33,6 +38,7 @@ const jsonResponse = (statusCode: number, payload: Record<string, unknown>): Net
 });
 
 const asTrimmedString = (value: unknown): string => (typeof value === "string" ? value.trim() : "");
+const asBoolean = (value: unknown): boolean => value === true;
 
 const asRichText = (content: string) => [
   {
@@ -40,6 +46,9 @@ const asRichText = (content: string) => [
     text: { content },
   },
 ];
+
+const buildTitleValue = (content: string) => ({ title: asRichText(content) });
+const buildRichTextValue = (content: string) => ({ rich_text: asRichText(content) });
 
 const isValidUrl = (value: string): boolean => {
   if (!value) {
@@ -115,8 +124,75 @@ const getDuplicateFilter = (propertyName: string, property: NotionProperty | und
 const findTitlePropertyName = (properties: Record<string, NotionProperty>): string | null =>
   Object.entries(properties).find(([, property]) => property?.type === "title")?.[0] ?? null;
 
-const buildTitleValue = (content: string) => ({ title: asRichText(content) });
-const buildRichTextValue = (content: string) => ({ rich_text: asRichText(content) });
+const findPropertyEntry = (
+  properties: Record<string, NotionProperty>,
+  candidates: string[],
+): [string, NotionProperty] | null => {
+  const normalizedCandidates = candidates.map((candidate) => candidate.toLowerCase());
+  const entry = Object.entries(properties).find(([name]) => normalizedCandidates.includes(name.toLowerCase()));
+  return entry ?? null;
+};
+
+const applyPhoneProperty = (
+  propertiesPayload: Record<string, unknown>,
+  propertyName: string,
+  property: NotionProperty | undefined,
+  phone: string,
+) => {
+  if (!phone || !property) {
+    return;
+  }
+
+  if (property.type === "phone_number") {
+    propertiesPayload[propertyName] = { phone_number: phone };
+    return;
+  }
+
+  if (property.type === "title") {
+    propertiesPayload[propertyName] = buildTitleValue(phone);
+    return;
+  }
+
+  if (isTextProperty(property)) {
+    propertiesPayload[propertyName] = buildRichTextValue(phone);
+  }
+};
+
+const applyBooleanProperty = (
+  propertiesPayload: Record<string, unknown>,
+  propertyName: string,
+  property: NotionProperty | undefined,
+  value: boolean,
+) => {
+  if (!property) {
+    return;
+  }
+
+  if (property.type === "checkbox") {
+    propertiesPayload[propertyName] = { checkbox: value };
+    return;
+  }
+
+  if (property.type === "title") {
+    propertiesPayload[propertyName] = buildTitleValue(value ? "Yes" : "No");
+    return;
+  }
+
+  if (isTextProperty(property)) {
+    propertiesPayload[propertyName] = buildRichTextValue(value ? "Yes" : "No");
+    return;
+  }
+
+  if (property.type === "select") {
+    const selectedOption = value
+      ? findSelectOption(property, ["Yes", "כן", "Subscribed", "Requested", "Active"])
+      : findSelectOption(property, ["No", "לא", "Inactive"]);
+
+    if (selectedOption) {
+      propertiesPayload[propertyName] = { select: { name: selectedOption } };
+    }
+  }
+};
 
 export const handler = async (event: NetlifyEvent): Promise<NetlifyResponse> => {
   if (event.httpMethod !== "POST") {
@@ -131,6 +207,9 @@ export const handler = async (event: NetlifyEvent): Promise<NetlifyResponse> => 
   }
 
   const email = asTrimmedString(payload.email).toLowerCase();
+  const phone = asTrimmedString(payload.phone);
+  const newsletter = asBoolean(payload.newsletter);
+  const whatsapp = asBoolean(payload.whatsapp);
   const name = asTrimmedString(payload.name);
   const source = asTrimmedString(payload.source) || "website";
   const pageUrl = asTrimmedString(payload.pageUrl);
@@ -141,6 +220,14 @@ export const handler = async (event: NetlifyEvent): Promise<NetlifyResponse> => 
 
   if (!EMAIL_REGEX.test(email)) {
     return jsonResponse(400, { ok: false, message: "Invalid email." });
+  }
+
+  if (!newsletter && !whatsapp) {
+    return jsonResponse(400, { ok: false, message: "At least one channel is required." });
+  }
+
+  if (whatsapp && !PHONE_REGEX.test(phone)) {
+    return jsonResponse(400, { ok: false, message: "A valid phone number is required for WhatsApp." });
   }
 
   const notionToken = process.env.NOTION_TOKEN;
@@ -164,6 +251,8 @@ export const handler = async (event: NetlifyEvent): Promise<NetlifyResponse> => 
 
     const emailProperty = databaseProperties.Email;
     const duplicateFilter = getDuplicateFilter("Email", emailProperty, email);
+
+    let existingPageId: string | null = null;
     if (duplicateFilter) {
       const queryResponse = await fetch(`https://api.notion.com/v1/databases/${databaseId}/query`, {
         method: "POST",
@@ -180,9 +269,7 @@ export const handler = async (event: NetlifyEvent): Promise<NetlifyResponse> => 
       }
 
       const queryData = (await queryResponse.json()) as NotionQueryResult;
-      if (Array.isArray(queryData.results) && queryData.results.length > 0) {
-        return jsonResponse(200, { ok: true, already: true });
-      }
+      existingPageId = queryData.results?.[0]?.id ?? null;
     }
 
     const properties: Record<string, unknown> = {};
@@ -224,6 +311,21 @@ export const handler = async (event: NetlifyEvent): Promise<NetlifyResponse> => 
       properties.Consent = { checkbox: true };
     }
 
+    const phoneEntry = findPropertyEntry(databaseProperties, ["Phone", "טלפון"]);
+    if (phoneEntry) {
+      applyPhoneProperty(properties, phoneEntry[0], phoneEntry[1], phone);
+    }
+
+    const newsletterEntry = findPropertyEntry(databaseProperties, ["Newsletter", "ניוזלטר"]);
+    if (newsletterEntry) {
+      applyBooleanProperty(properties, newsletterEntry[0], newsletterEntry[1], newsletter);
+    }
+
+    const whatsappEntry = findPropertyEntry(databaseProperties, ["WhatsApp", "Whatsapp", "וואטסאפ"]);
+    if (whatsappEntry) {
+      applyBooleanProperty(properties, whatsappEntry[0], whatsappEntry[1], whatsapp);
+    }
+
     const doubleOptInStatus = findSelectOption(databaseProperties["Double opt in status"], ["Pending"]);
     if (doubleOptInStatus) {
       properties["Double opt in status"] = { select: { name: doubleOptInStatus } };
@@ -239,21 +341,36 @@ export const handler = async (event: NetlifyEvent): Promise<NetlifyResponse> => 
       properties[titlePropertyName] = buildTitleValue(email);
     }
 
-    const createResponse = await fetch("https://api.notion.com/v1/pages", {
-      method: "POST",
-      headers: notionHeaders,
-      body: JSON.stringify({
-        parent: { database_id: databaseId },
-        properties,
-      }),
-    });
+    const response = existingPageId
+      ? await fetch(`https://api.notion.com/v1/pages/${existingPageId}`, {
+          method: "PATCH",
+          headers: notionHeaders,
+          body: JSON.stringify({ properties }),
+        })
+      : await fetch("https://api.notion.com/v1/pages", {
+          method: "POST",
+          headers: notionHeaders,
+          body: JSON.stringify({
+            parent: { database_id: databaseId },
+            properties,
+          }),
+        });
 
-    if (!createResponse.ok) {
-      console.error("[newsletter] Failed to create subscriber in Notion.", await createResponse.text());
+    if (!response.ok) {
+      console.error(
+        existingPageId
+          ? "[newsletter] Failed to update subscriber in Notion."
+          : "[newsletter] Failed to create subscriber in Notion.",
+        await response.text(),
+      );
       return jsonResponse(500, { ok: false, message: "Unable to subscribe right now." });
     }
 
-    return jsonResponse(200, { ok: true });
+    return jsonResponse(200, {
+      ok: true,
+      already: Boolean(existingPageId),
+      updated: Boolean(existingPageId),
+    });
   } catch (error) {
     console.error("[newsletter] Unexpected error while subscribing.", error);
     return jsonResponse(500, { ok: false, message: "Unable to subscribe right now." });

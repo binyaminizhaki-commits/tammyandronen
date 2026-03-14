@@ -104,7 +104,7 @@ const translations = {
       },
     },
     accessibility: {
-      title: "הצהרת נגישות",
+      title: "תפריט נגישות",
       close: "סגור תפריט נגישות",
       fontSize: "גודל גופן",
       lineHeight: "גובה שורה",
@@ -171,7 +171,7 @@ const translations = {
       },
     },
     accessibility: {
-      title: "Accessibility Statement",
+      title: "Accessibility menu",
       close: "Close accessibility menu",
       fontSize: "Font Size",
       lineHeight: "Line Height",

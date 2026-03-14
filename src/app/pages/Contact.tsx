@@ -1,7 +1,6 @@
+import { useState } from "react";
 import { motion } from "motion/react";
 import { Mail, MapPin, Phone } from "lucide-react";
-import { useState } from "react";
-import { Link } from "react-router";
 
 import { Navigation } from "../components/Navigation";
 import { UnifiedBackground } from "../components/UnifiedBackground";
@@ -13,6 +12,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const addressValue = "האוניברסיטה העברית, קמפוס ספרא, בניין הספרייה הישנה, ירושלים";
 const mapUrl =
   "https://www.google.com/maps/search/?api=1&query=%D7%94%D7%90%D7%95%D7%A0%D7%99%D7%91%D7%A8%D7%A1%D7%99%D7%98%D7%94+%D7%94%D7%A2%D7%91%D7%A8%D7%99%D7%AA+%D7%A7%D7%9E%D7%A4%D7%95%D7%A1+%D7%A1%D7%A4%D7%A8%D7%90+%D7%91%D7%A0%D7%99%D7%99%D7%9F+%D7%94%D7%A1%D7%A4%D7%A8%D7%99%D7%99%D7%94+%D7%94%D7%99%D7%A9%D7%A0%D7%94+%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D";
+const mapEmbedUrl = `https://www.google.com/maps?q=${encodeURIComponent(addressValue)}&z=17&output=embed`;
 
 type ContactFormState = {
   name: string;
@@ -42,7 +42,9 @@ export function Contact() {
     language === "he"
       ? {
           contactDescription: "השאירו הודעה ונחזור אליכם בהקדם.",
-          navigationTitle: "ניווט האתר",
+          mapTitle: "מפת הארכיון",
+          mapDescription: "כך מגיעים אל הארכיון - בית למחול בקמפוס ספרא, בניין הספרייה הישנה.",
+          openMapLabel: "פתיחה בגוגל מפות",
           formTitle: "שלחו הודעה",
           submitLabel: "שליחת הודעה",
           submittingLabel: "שולח...",
@@ -52,7 +54,9 @@ export function Contact() {
         }
       : {
           contactDescription: "Leave a message and we will get back to you soon.",
-          navigationTitle: "Site navigation",
+          mapTitle: "Archive map",
+          mapDescription: "Find the Archive - House of Dance at Safra Campus, Old Library Building.",
+          openMapLabel: "Open in Google Maps",
           formTitle: "Send a message",
           submitLabel: "Send message",
           submittingLabel: "Sending...",
@@ -60,14 +64,6 @@ export function Contact() {
           success: "Your message was sent successfully.",
           fallbackError: "There was a problem sending your message. Please try again later.",
         };
-
-  const quickLinks = [
-    { label: t.nav.home, path: "/" },
-    { label: t.nav.tammyRonen, path: "/tammy-ronen" },
-    { label: t.nav.studio, path: "/studio" },
-    { label: t.nav.residency, path: "/residency" },
-    { label: t.nav.contact, path: "/contact" },
-  ];
 
   const contactItems = [
     {
@@ -90,12 +86,14 @@ export function Contact() {
     },
   ];
 
-  const handleChange = (field: keyof ContactFormState) => (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData((current) => ({
-      ...current,
-      [field]: event.target.value,
-    }));
-  };
+  const handleChange =
+    (field: keyof ContactFormState) =>
+    (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setFormData((current) => ({
+        ...current,
+        [field]: event.target.value,
+      }));
+    };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -145,7 +143,7 @@ export function Contact() {
   };
 
   return (
-    <div className="min-h-screen pt-24">
+    <div className="min-h-screen pt-20 md:pt-24">
       <UnifiedBackground />
       <Navigation />
 
@@ -181,7 +179,7 @@ export function Contact() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: index * 0.08 }}
-                className={`rounded-[1.75rem] border border-black/8 bg-white/70 p-6 shadow-lg shadow-stone-200/20 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-accent/35 ${
+                className={`border border-black/8 bg-white/70 p-6 shadow-sm backdrop-blur-xl transition-colors duration-200 hover:border-accent/35 ${
                   isRTL ? "text-right" : "text-left"
                 }`}
               >
@@ -203,21 +201,32 @@ export function Contact() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="rounded-[2rem] border border-black/8 bg-white/68 p-8 shadow-xl shadow-stone-200/20 backdrop-blur-xl"
+            className="overflow-hidden border border-black/8 bg-white/68 shadow-sm backdrop-blur-xl"
           >
-            <div className={`space-y-6 ${isRTL ? "text-right" : "text-left"}`}>
-              <h2 className="text-4xl">{copy.navigationTitle}</h2>
-              <div className="grid gap-3 sm:grid-cols-2">
-                {quickLinks.map((link) => (
-                  <Link
-                    key={link.path}
-                    to={link.path}
-                    className="rounded-2xl border border-black/8 bg-white/85 px-5 py-4 text-base text-foreground transition-all duration-300 hover:border-accent/35 hover:text-accent"
-                  >
-                    {link.label}
-                  </Link>
-                ))}
+            <div className={`space-y-5 p-8 ${isRTL ? "text-right" : "text-left"}`}>
+              <div className="space-y-3">
+                <h2 className="text-4xl">{copy.mapTitle}</h2>
+                <p className="text-lg leading-relaxed text-secondary">{copy.mapDescription}</p>
               </div>
+
+              <div className="overflow-hidden border border-black/8 bg-stone-100">
+                <iframe
+                  title={copy.mapTitle}
+                  src={mapEmbedUrl}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  className="h-[340px] w-full border-0"
+                />
+              </div>
+
+              <a
+                href={mapUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center border border-black/12 px-4 py-3 text-sm font-medium text-accent transition-colors duration-200 hover:border-accent hover:text-accent"
+              >
+                {copy.openMapLabel}
+              </a>
             </div>
           </motion.section>
 
@@ -226,7 +235,7 @@ export function Contact() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="rounded-[2rem] border border-black/8 bg-white/68 p-8 shadow-xl shadow-stone-200/20 backdrop-blur-xl"
+            className="border border-black/8 bg-white/68 p-8 shadow-sm backdrop-blur-xl"
           >
             <div className={`space-y-6 ${isRTL ? "text-right" : "text-left"}`}>
               <div className="space-y-3">
@@ -242,7 +251,7 @@ export function Contact() {
                     onChange={handleChange("name")}
                     required
                     placeholder={t.contact.form.name}
-                    className={`w-full rounded-2xl border border-black/10 bg-white/85 px-5 py-4 text-base focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 ${
+                    className={`w-full border border-black/10 bg-white/85 px-5 py-4 text-base focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 ${
                       isRTL ? "text-right" : "text-left"
                     }`}
                   />
@@ -252,7 +261,7 @@ export function Contact() {
                     onChange={handleChange("email")}
                     required
                     placeholder={t.contact.form.email}
-                    className={`w-full rounded-2xl border border-black/10 bg-white/85 px-5 py-4 text-base focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 ${
+                    className={`w-full border border-black/10 bg-white/85 px-5 py-4 text-base focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 ${
                       isRTL ? "text-right" : "text-left"
                     }`}
                   />
@@ -264,7 +273,7 @@ export function Contact() {
                     value={formData.phone}
                     onChange={handleChange("phone")}
                     placeholder={t.contact.form.phone}
-                    className={`w-full rounded-2xl border border-black/10 bg-white/85 px-5 py-4 text-base focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 ${
+                    className={`w-full border border-black/10 bg-white/85 px-5 py-4 text-base focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 ${
                       isRTL ? "text-right" : "text-left"
                     }`}
                   />
@@ -273,7 +282,7 @@ export function Contact() {
                     value={formData.subject}
                     onChange={handleChange("subject")}
                     placeholder={t.contact.form.subject}
-                    className={`w-full rounded-2xl border border-black/10 bg-white/85 px-5 py-4 text-base focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 ${
+                    className={`w-full border border-black/10 bg-white/85 px-5 py-4 text-base focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 ${
                       isRTL ? "text-right" : "text-left"
                     }`}
                   />
@@ -285,7 +294,7 @@ export function Contact() {
                   required
                   rows={6}
                   placeholder={t.contact.form.message}
-                  className={`w-full rounded-[1.5rem] border border-black/10 bg-white/85 px-5 py-4 text-base focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 ${
+                  className={`w-full border border-black/10 bg-white/85 px-5 py-4 text-base focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 ${
                     isRTL ? "text-right" : "text-left"
                   }`}
                 />
@@ -293,7 +302,7 @@ export function Contact() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="inline-flex items-center justify-center rounded-full bg-accent px-6 py-3 text-base font-medium text-white shadow-lg transition-all duration-300 hover:scale-[1.01] hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex items-center justify-center bg-accent px-6 py-3 text-base font-medium text-white shadow-sm transition-all duration-200 hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {isSubmitting ? copy.submittingLabel : copy.submitLabel}
                 </button>

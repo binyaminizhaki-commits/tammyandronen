@@ -27,6 +27,8 @@ interface ImageLightboxDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   initialIndex?: number;
+  showDescription?: boolean;
+  showThumbnailCaptions?: boolean;
 }
 
 export function ImageLightboxDialog({
@@ -36,6 +38,8 @@ export function ImageLightboxDialog({
   open,
   onOpenChange,
   initialIndex = 0,
+  showDescription = true,
+  showThumbnailCaptions = true,
 }: ImageLightboxDialogProps) {
   const [activeIndex, setActiveIndex] = useState(initialIndex);
   const activeAsset = assets[activeIndex];
@@ -78,9 +82,11 @@ export function ImageLightboxDialog({
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="space-y-1 text-left">
               <DialogTitle className="text-2xl font-light text-foreground">{title}</DialogTitle>
-              <DialogDescription className="text-base text-secondary">
-                {activeAsset.captionHe}
-              </DialogDescription>
+              {showDescription ? (
+                <DialogDescription className="text-base text-secondary">
+                  {activeAsset.captionHe}
+                </DialogDescription>
+              ) : null}
             </div>
             <p className="text-sm text-secondary">
               {activeIndex + 1} / {assets.length}
@@ -147,9 +153,11 @@ export function ImageLightboxDialog({
                     loading="lazy"
                     decoding="async"
                   />
-                  <span className="line-clamp-2 block px-2 py-2 text-xs text-secondary">
-                    {asset.captionHe}
-                  </span>
+                  {showThumbnailCaptions ? (
+                    <span className="line-clamp-2 block px-2 py-2 text-xs text-secondary">
+                      {asset.captionHe}
+                    </span>
+                  ) : null}
                 </button>
               ))}
             </div>

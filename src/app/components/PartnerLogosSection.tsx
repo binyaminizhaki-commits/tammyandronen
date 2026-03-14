@@ -48,20 +48,23 @@ const partnerLogos: Logo[] = [
   },
 ];
 
-type PartnerLogosSectionProps = React.ComponentProps<"div">;
+type PartnerLogosSectionProps = React.ComponentProps<"div"> & {
+  variant?: "framed" | "bare";
+};
 
 export function PartnerLogosSection({
   className,
+  variant = "framed",
   ...props
 }: PartnerLogosSectionProps) {
   const { isRTL } = useLanguage();
   const title = isRTL
-    ? "\u05EA\u05DE\u05D9\u05DB\u05D4 \u05D5\u05D1\u05E9\u05D9\u05EA\u05D5\u05E3"
-    : "Support and Collaboration";
+    ? "תומכים ושותפים"
+    : "Supporters and Partners";
 
   return (
     <div {...props} className={cn("mx-auto w-full max-w-6xl", className)}>
-      <Logos3 heading={title} logos={partnerLogos} />
+      <Logos3 heading={title} logos={partnerLogos} variant={variant} />
     </div>
   );
 }

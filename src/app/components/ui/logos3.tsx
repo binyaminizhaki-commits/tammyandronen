@@ -22,6 +22,7 @@ interface Logos3Props {
   heading?: string;
   logos?: Logo[];
   className?: string;
+  variant?: "framed" | "bare";
 }
 
 const defaultLogos: Logo[] = [
@@ -79,6 +80,7 @@ function Logos3({
   heading = "Trusted by these companies",
   logos = defaultLogos,
   className,
+  variant = "framed",
 }: Logos3Props) {
   const plugin = React.useRef(
     AutoScroll({
@@ -94,13 +96,20 @@ function Logos3({
 
   return (
     <section className={cn("w-full", className)}>
-      <div className="mb-6 flex flex-col items-center text-center">
-        <h2 className="text-sm font-medium uppercase tracking-[0.28em] text-secondary/75">
+      <div className="mb-5 flex flex-col items-center text-center">
+        <h2 className="text-sm font-medium text-secondary/78">
           {heading}
         </h2>
       </div>
 
-      <div className="relative overflow-hidden rounded-[2rem] border border-amber-300/40 bg-gradient-to-br from-amber-50/85 via-white/85 to-stone-100/80 shadow-[0_24px_80px_rgba(120,100,58,0.12)] backdrop-blur-xl">
+      <div
+        className={cn(
+          "relative overflow-hidden",
+          variant === "framed"
+            ? "rounded-[2rem] border border-amber-300/40 bg-gradient-to-br from-amber-50/85 via-white/85 to-stone-100/80 shadow-[0_24px_80px_rgba(120,100,58,0.12)] backdrop-blur-xl"
+            : "",
+        )}
+      >
         <Carousel
           opts={{ loop: true, align: "start", dragFree: true }}
           plugins={[plugin.current]}
@@ -112,14 +121,19 @@ function Logos3({
                 key={logo.id}
                 className="basis-[44%] pl-0 sm:basis-[34%] md:basis-[26%] lg:basis-[20%] xl:basis-[16.666%]"
               >
-                <div className="flex min-h-[104px] items-center justify-center px-6 py-5">
+                <div
+                  className={cn(
+                    "flex items-center justify-center px-6",
+                    variant === "framed" ? "min-h-[104px] py-5" : "min-h-[80px] py-3",
+                  )}
+                >
                   <img
                     src={logo.image}
                     alt={logo.description}
                     loading="lazy"
                     draggable={false}
                     className={cn(
-                      "h-[52px] w-auto max-w-[180px] object-contain opacity-80 transition duration-300 ease-out hover:scale-[1.03] hover:opacity-100 sm:h-[60px]",
+                      "h-[52px] w-auto max-w-[180px] object-contain opacity-82 transition duration-300 ease-out hover:opacity-100 sm:h-[60px]",
                       logo.className,
                     )}
                   />
@@ -129,8 +143,12 @@ function Logos3({
           </CarouselContent>
         </Carousel>
 
-        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-14 bg-gradient-to-r from-[rgba(247,243,236,0.98)] to-transparent sm:w-24" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-14 bg-gradient-to-l from-[rgba(247,243,236,0.98)] to-transparent sm:w-24" />
+        {variant === "framed" ? (
+          <>
+            <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-14 bg-gradient-to-r from-[rgba(247,243,236,0.98)] to-transparent sm:w-24" />
+            <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-14 bg-gradient-to-l from-[rgba(247,243,236,0.98)] to-transparent sm:w-24" />
+          </>
+        ) : null}
       </div>
     </section>
   );
