@@ -3,3 +3,5 @@ This Figma Make file includes components from [shadcn/ui](https://ui.shadcn.com/
 This Figma Make file includes photos from [Unsplash](https://unsplash.com) used under [license](https://unsplash.com/license).
 
 This project bundles [IBM Plex Sans](https://github.com/IBM/plex) and [IBM Plex Sans Hebrew](https://github.com/IBM/plex), both used under the [SIL Open Font License 1.1](https://openfontlicense.org/).
+
+This project bundles [Open Sans](https://fonts.google.com/specimen/Open+Sans) used under the [SIL Open Font License 1.1](https://openfontlicense.org/).
