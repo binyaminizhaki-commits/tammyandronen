@@ -26,6 +26,13 @@
 /* Smooth Scrolling */
 html {
   scroll-behavior: smooth;
+  overflow-x: clip;
+}
+
+body,
+#root {
+  max-width: 100%;
+  overflow-x: clip;
 }
 
 /* Selection Color */

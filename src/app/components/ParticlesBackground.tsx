@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import { useMemo } from "react";
+import { useIsMobile } from "./ui/use-mobile";
 
 interface Particle {
   id: number;
@@ -13,11 +14,12 @@ interface Particle {
 }
 
 export function ParticlesBackground() {
-  // Generate particles once
+  const isMobile = useIsMobile();
+
   const particles = useMemo(() => {
     const particlesList: Particle[] = [];
     const colors = ["200, 169, 106", "119, 119, 119", "200, 169, 106", "17, 17, 17"];
-    
+
     for (let i = 0; i < 60; i++) {
       particlesList.push({
         id: i,
@@ -30,11 +32,16 @@ export function ParticlesBackground() {
         color: colors[Math.floor(Math.random() * colors.length)],
       });
     }
+
     return particlesList;
   }, []);
 
+  if (isMobile) {
+    return null;
+  }
+
   return (
-    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+    <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
       {particles.map((particle) => (
         <motion.div
           key={particle.id}
@@ -63,13 +70,12 @@ export function ParticlesBackground() {
         />
       ))}
 
-      {/* Connection lines between nearby particles */}
       {particles.slice(0, 15).map((particle, i) => {
         const nextParticle = particles[(i + 3) % particles.length];
         return (
           <motion.svg
             key={`line-${particle.id}`}
-            className="absolute inset-0 w-full h-full"
+            className="absolute inset-0 h-full w-full"
             style={{ willChange: "opacity" }}
           >
             <motion.line
@@ -77,11 +83,9 @@ export function ParticlesBackground() {
               y1={`${particle.y}%`}
               x2={`${nextParticle.x}%`}
               y2={`${nextParticle.y}%`}
-              stroke={`rgba(200, 169, 106, 0.1)`}
+              stroke="rgba(200, 169, 106, 0.1)"
               strokeWidth="0.5"
-              animate={{
-                opacity: [0.1, 0.3, 0.1],
-              }}
+              animate={{ opacity: [0.1, 0.3, 0.1] }}
               transition={{
                 duration: 8,
                 delay: i * 0.5,
@@ -93,7 +97,6 @@ export function ParticlesBackground() {
         );
       })}
 
-      {/* Larger floating orbs */}
       {[...Array(5)].map((_, i) => (
         <motion.div
           key={`orb-${i}`}
@@ -103,7 +106,7 @@ export function ParticlesBackground() {
             top: `${15 + (i % 3) * 30}%`,
             width: 80 + i * 20,
             height: 80 + i * 20,
-            background: `radial-gradient(circle, rgba(200, 169, 106, 0.06) 0%, transparent 70%)`,
+            background: "radial-gradient(circle, rgba(200, 169, 106, 0.06) 0%, transparent 70%)",
             filter: "blur(40px)",
             willChange: "transform",
           }}

@@ -1,15 +1,6 @@
 "use client";
 
-import * as React from "react";
-import AutoScroll from "embla-carousel-auto-scroll";
-
 import { cn } from "@/lib/utils";
-
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "./carousel";
 
 export interface Logo {
   id: string;
@@ -82,24 +73,10 @@ function Logos3({
   className,
   variant = "framed",
 }: Logos3Props) {
-  const plugin = React.useRef(
-    AutoScroll({
-      playOnInit: true,
-      startDelay: 0,
-      direction: "backward",
-      speed: 0.65,
-      stopOnInteraction: false,
-      stopOnMouseEnter: true,
-      stopOnFocusIn: true,
-    }),
-  );
-
   return (
     <section className={cn("w-full", className)}>
       <div className="mb-5 flex flex-col items-center text-center">
-        <h2 className="text-sm font-medium text-secondary/78">
-          {heading}
-        </h2>
+        <h2 className="text-sm font-medium text-secondary/78">{heading}</h2>
       </div>
 
       <div
@@ -110,45 +87,36 @@ function Logos3({
             : "",
         )}
       >
-        <Carousel
-          opts={{ loop: true, align: "start", dragFree: true }}
-          plugins={[plugin.current]}
-          className="w-full"
+        <ul
+          className={cn(
+            "grid items-center",
+            variant === "framed"
+              ? "grid-cols-2 gap-x-4 gap-y-3 px-4 py-4 sm:grid-cols-3 sm:px-6 sm:py-5 lg:grid-cols-6"
+              : "grid-cols-2 gap-x-5 gap-y-4 sm:grid-cols-3 lg:grid-cols-6",
+          )}
         >
-          <CarouselContent className="ml-0 items-center">
-            {logos.map((logo) => (
-              <CarouselItem
-                key={logo.id}
-                className="basis-[44%] pl-0 sm:basis-[34%] md:basis-[26%] lg:basis-[20%] xl:basis-[16.666%]"
+          {logos.map((logo) => (
+            <li key={logo.id} className="min-w-0">
+              <div
+                className={cn(
+                  "flex items-center justify-center px-2",
+                  variant === "framed" ? "min-h-[86px] py-3 sm:min-h-[96px]" : "min-h-[72px] py-2",
+                )}
               >
-                <div
+                <img
+                  src={logo.image}
+                  alt={logo.description}
+                  loading="lazy"
+                  draggable={false}
                   className={cn(
-                    "flex items-center justify-center px-6",
-                    variant === "framed" ? "min-h-[104px] py-5" : "min-h-[80px] py-3",
+                    "h-[46px] w-auto max-w-full object-contain opacity-88 sm:h-[54px]",
+                    logo.className,
                   )}
-                >
-                  <img
-                    src={logo.image}
-                    alt={logo.description}
-                    loading="lazy"
-                    draggable={false}
-                    className={cn(
-                      "h-[52px] w-auto max-w-[180px] object-contain opacity-82 transition duration-300 ease-out hover:opacity-100 sm:h-[60px]",
-                      logo.className,
-                    )}
-                  />
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-        </Carousel>
-
-        {variant === "framed" ? (
-          <>
-            <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-14 bg-gradient-to-r from-[rgba(247,243,236,0.98)] to-transparent sm:w-24" />
-            <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-14 bg-gradient-to-l from-[rgba(247,243,236,0.98)] to-transparent sm:w-24" />
-          </>
-        ) : null}
+                />
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );

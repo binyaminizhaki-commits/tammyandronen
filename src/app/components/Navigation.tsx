@@ -9,46 +9,38 @@ import { useLanguage } from "../contexts/LanguageContext";
 import { useTranslation } from "../translations/useTranslation";
 import { LanguageToggle } from "./LanguageToggle";
 
+const HEBREW_ARCHIVE_LABEL = "\u05d4\u05d0\u05e8\u05db\u05d9\u05d5\u05df";
+const HEBREW_EVENTS_LABEL = "\u05d0\u05d9\u05e8\u05d5\u05e2\u05d9\u05dd";
+const HEBREW_MENU_LABEL = "\u05ea\u05e4\u05e8\u05d9\u05d8";
+const HEBREW_CLOSE_LABEL = "\u05e1\u05d2\u05d5\u05e8";
+const SITE_LOGO_ALT = "\u05d4\u05d0\u05e8\u05db\u05d9\u05d5\u05df - \u05d1\u05d9\u05ea \u05dc\u05de\u05d7\u05d5\u05dc";
+
 export function Navigation() {
   const location = useLocation();
   const { t } = useTranslation();
   const { isRTL } = useLanguage();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const navItems = isRTL
-    ? [
-        { label: t.nav.home, path: "/" },
-        { label: t.nav.tammyRonen, path: "/tammy-ronen" },
-        { label: "הארכיון", path: "/studio" },
-        { label: "אירועים", path: "/events" },
-        { label: t.nav.residency, path: "/residency" },
-        { label: t.nav.contact, path: "/contact" },
-      ]
-    : [
-        { label: t.nav.home, path: "/" },
-        { label: t.nav.tammyRonen, path: "/tammy-ronen" },
-        { label: "Archive", path: "/studio" },
-        { label: "Events", path: "/events" },
-        { label: t.nav.residency, path: "/residency" },
-        { label: t.nav.contact, path: "/contact" },
-      ];
+  const navItems = [
+    { label: t.nav.home, path: "/" },
+    { label: t.nav.tammyRonen, path: "/tammy-ronen" },
+    { label: isRTL ? HEBREW_ARCHIVE_LABEL : "Archive", path: "/studio" },
+    { label: isRTL ? HEBREW_EVENTS_LABEL : "Events", path: "/events" },
+    { label: t.nav.residency, path: "/residency" },
+    { label: t.nav.contact, path: "/contact" },
+  ];
 
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [location.pathname]);
 
-  const menuLabel = isRTL ? "תפריט" : "Menu";
-  const closeMenuLabel = isRTL ? "סגור" : "Close";
+  const menuLabel = isRTL ? HEBREW_MENU_LABEL : "Menu";
+  const closeMenuLabel = isRTL ? HEBREW_CLOSE_LABEL : "Close";
   const desktopLeft = isRTL ? <LanguageToggle /> : <SiteLogo />;
   const desktopRight = isRTL ? <SiteLogo /> : <LanguageToggle />;
 
   return (
-    <motion.nav
-      initial={{ y: -72 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.45, ease: "easeOut" }}
-      className="fixed inset-x-0 top-0 z-50 overflow-hidden border-b border-black/8 bg-white/36 shadow-[0_12px_34px_rgba(15,23,42,0.08)] backdrop-blur-2xl supports-[backdrop-filter]:bg-white/28"
-    >
+    <nav className="fixed inset-x-0 top-0 z-50 overflow-hidden border-b border-black/8 bg-white/36 shadow-[0_12px_34px_rgba(15,23,42,0.08)] backdrop-blur-2xl supports-[backdrop-filter]:bg-white/28">
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.56),rgba(255,255,255,0.18))]" />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-white/80" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-black/6" />
@@ -71,29 +63,24 @@ export function Navigation() {
       </div>
 
       <div
-        className={cn(
-          "relative flex items-center justify-between gap-3 px-4 py-3 md:hidden",
-          isRTL ? "flex-row-reverse" : "",
-        )}
+        className="relative flex min-w-0 items-center justify-between gap-2 px-3 py-3 md:hidden"
+        dir="ltr"
       >
-        <SiteLogo />
+        <SiteLogo className="shrink-0" />
 
-        <div className={cn("flex items-center gap-2", isRTL ? "flex-row-reverse" : "")}>
-          <LanguageToggle className="px-2.5" />
+        <div className="flex min-w-0 shrink-0 items-center gap-2">
+          <LanguageToggle compact />
           <motion.button
             type="button"
             whileTap={{ scale: 0.97 }}
             onClick={() => setIsMobileMenuOpen((open) => !open)}
-            className={cn(
-              "inline-flex min-h-10 items-center gap-2 border border-white/55 bg-white/42 px-3 py-2 text-sm font-medium text-foreground shadow-sm backdrop-blur-xl transition-colors hover:bg-white/58",
-              isRTL ? "flex-row-reverse" : "",
-            )}
+            className="inline-flex h-10 w-10 shrink-0 items-center justify-center border border-white/55 bg-white/42 text-sm font-medium text-foreground shadow-sm backdrop-blur-xl transition-colors hover:bg-white/58"
             aria-expanded={isMobileMenuOpen}
             aria-controls="mobile-site-nav"
             aria-label={isMobileMenuOpen ? closeMenuLabel : menuLabel}
           >
             {isMobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-            <span>{isMobileMenuOpen ? closeMenuLabel : menuLabel}</span>
+            <span className="sr-only">{isMobileMenuOpen ? closeMenuLabel : menuLabel}</span>
           </motion.button>
         </div>
       </div>
@@ -110,10 +97,11 @@ export function Navigation() {
           >
             <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.48),rgba(255,255,255,0.18))]" />
             <div className="grid gap-1 px-4 py-3">
-              {navItems.map((item) => (
+              {navItems.map((item, index) => (
                 <MobileNavItem
                   key={item.path}
                   item={item}
+                  index={index}
                   isActive={location.pathname === item.path}
                   onSelect={() => setIsMobileMenuOpen(false)}
                 />
@@ -122,7 +110,7 @@ export function Navigation() {
           </motion.div>
         ) : null}
       </AnimatePresence>
-    </motion.nav>
+    </nav>
   );
 }
 
@@ -136,14 +124,9 @@ interface NavItemProps {
   isActive: boolean;
 }
 
-function NavItem({ item, index, mobile, isActive }: NavItemProps) {
+function NavItem({ item, mobile, isActive }: NavItemProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.1 + index * 0.05 }}
-      className="relative"
-    >
+    <div className="relative">
       <Link
         to={item.path}
         className={cn(
@@ -162,7 +145,7 @@ function NavItem({ item, index, mobile, isActive }: NavItemProps) {
           ) : null}
         </span>
       </Link>
-    </motion.div>
+    </div>
   );
 }
 
@@ -171,16 +154,18 @@ interface MobileNavItemProps {
     label: string;
     path: string;
   };
+  index: number;
   isActive: boolean;
   onSelect: () => void;
 }
 
-function MobileNavItem({ item, isActive, onSelect }: MobileNavItemProps) {
+function MobileNavItem({ item, index, isActive, onSelect }: MobileNavItemProps) {
   return (
     <Link to={item.path} className="block" onClick={onSelect}>
       <div
         className={cn(
           "flex min-h-11 items-center justify-between border-b border-black/8 px-1 py-3 text-sm font-medium transition-colors duration-200",
+          index === 0 ? "border-t border-black/8" : "",
           isActive ? "text-foreground" : "text-foreground/76 hover:text-foreground",
         )}
       >
@@ -191,13 +176,16 @@ function MobileNavItem({ item, isActive, onSelect }: MobileNavItemProps) {
   );
 }
 
-function SiteLogo() {
+function SiteLogo({ className }: { className?: string }) {
   return (
     <Link
       to="/"
-      className="inline-flex items-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+      className={cn(
+        "inline-flex min-w-0 items-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent",
+        className,
+      )}
     >
-      <img src={logo} alt="הארכיון - בית למחול" className="h-11 w-auto md:h-12" />
+      <img src={logo} alt={SITE_LOGO_ALT} className="h-10 w-auto md:h-12" />
     </Link>
   );
 }

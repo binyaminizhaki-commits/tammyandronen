@@ -1,7 +1,6 @@
 import { useLayoutEffect } from "react";
 import { Outlet, useLocation } from "react-router";
 import { Footer } from "./Footer";
-import { FloatingSidebar } from "./FloatingSidebar";
 import { ParticlesBackground } from "./ParticlesBackground";
 
 export function Layout() {
@@ -12,10 +11,9 @@ export function Layout() {
   }, [pathname]);
 
   return (
-    <div className="min-h-screen flex flex-col relative">
+    <div className="relative flex min-h-screen flex-col overflow-x-clip">
       <ParticlesBackground />
-      <FloatingSidebar />
-      <main className="flex-1 relative z-10">
+      <main className="relative z-10 flex-1 overflow-x-clip">
         <Outlet />
       </main>
       <Footer />
