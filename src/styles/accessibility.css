@@ -1,20 +1,65 @@
 /* Accessibility Styles */
 
 :root {
-  --accessibility-font-size: 100%;
-  --accessibility-line-height: 100%;
+  --accessibility-font-scale: 1;
+  --accessibility-content-line-height: 1.65;
+  --accessibility-heading-line-height: 1.2;
   --accessibility-letter-spacing: 0px;
 }
 
 /* Apply accessibility font size */
 html {
-  font-size: calc(16px * var(--accessibility-font-size) / 100);
+  font-size: calc(16px * var(--accessibility-font-scale));
 }
 
-/* Apply line height and letter spacing */
-body {
-  line-height: calc(1.6 * var(--accessibility-line-height) / 100);
-  letter-spacing: var(--accessibility-letter-spacing);
+/* Apply line height and letter spacing when the menu changes text settings */
+.accessibility-text-adjust body {
+  text-rendering: optimizeLegibility;
+}
+
+.accessibility-text-adjust :where(
+  p,
+  li,
+  a,
+  button,
+  label,
+  input,
+  textarea,
+  select,
+  span,
+  small,
+  blockquote,
+  figcaption,
+  dd,
+  dt,
+  summary,
+  legend
+) {
+  letter-spacing: var(--accessibility-letter-spacing) !important;
+}
+
+.accessibility-text-adjust :where(
+  p,
+  li,
+  a,
+  button,
+  label,
+  input,
+  textarea,
+  select,
+  blockquote,
+  figcaption,
+  dd,
+  dt,
+  summary,
+  legend
+) {
+  line-height: var(--accessibility-content-line-height) !important;
+}
+
+.accessibility-text-adjust :where(h1, h2, h3, h4, h5, h6) {
+  line-height: var(--accessibility-heading-line-height) !important;
+  letter-spacing: var(--accessibility-letter-spacing) !important;
 }
 
 /* High Contrast Mode */
@@ -99,8 +144,9 @@ body {
 /* Skip to main content link (for screen readers) */
 .skip-link {
   position: absolute;
-  top: -40px;
+  top: 0;
   left: 0;
+  transform: translateY(calc(-100% - 8px));
   background: #C8A96A;
   color: white;
   padding: 8px 16px;
@@ -108,10 +154,11 @@ body {
   z-index: 100;
   border-radius: 0 0 8px 0;
   font-weight: bold;
+  transition: transform 0.15s ease;
 }
 
 .skip-link:focus {
-  top: 0;
+  transform: translateY(0);
 }
 
 /* Screen reader only */
