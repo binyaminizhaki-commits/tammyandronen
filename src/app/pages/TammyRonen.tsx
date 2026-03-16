@@ -4,6 +4,7 @@ import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { GalleryGroupCard } from "../components/media/GalleryGroupCard";
 import { ResponsiveImageGrid } from "../components/media/ResponsiveImageGrid";
 import { Navigation } from "../components/Navigation";
+import { PageHeroTitle } from "../components/PageHeroTitle";
 import { UnifiedBackground } from "../components/UnifiedBackground";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { useLanguage } from "../contexts/LanguageContext";
@@ -91,17 +92,10 @@ export function TammyRonen() {
       <Navigation />
 
       <div className="mx-auto max-w-7xl space-y-24 px-6 py-16">
-        <motion.section
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className={`space-y-4 ${isRTL ? "text-right" : "text-left"}`}
-        >
-          <h1 className="text-5xl md:text-6xl lg:text-7xl">תמי ורונן יצחקי</h1>
-          <p className="text-lg text-secondary">
-            {language === "en" ? "Tammy & Ronen Izhaki" : "Tammy & Ronen Izhaki"}
-          </p>
-        </motion.section>
+        <PageHeroTitle
+          title={language === "en" ? "Tammy & Ronen Izhaki" : "תמי ורונן יצחקי"}
+          subtitle={t.tammyRonen.subtitle}
+        />
 
         <BiographySplitSection asset={duoPortrait ?? null} title="תמי ורונן יצחקי" paragraphs={duoParagraphs} />
         <BiographySplitSection asset={tammyProfile} title="תמי יצחקי" paragraphs={tammyParagraphs} />

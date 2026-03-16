@@ -1,11 +1,14 @@
 import { motion } from "motion/react";
 import { Clock, Presentation, Sparkles, Users, Wrench } from "lucide-react";
+import { motion as framerMotion } from "framer-motion";
 
 import { Navigation } from "../components/Navigation";
+import { PageHeroTitle } from "../components/PageHeroTitle";
 import { UnifiedBackground } from "../components/UnifiedBackground";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { useLanguage } from "../contexts/LanguageContext";
 import { getAssetByUsage } from "../data/siteImages";
+import { useTranslation } from "../translations/useTranslation";
 
 const residencyParagraphs = [
   "הרזידנסי של הארכיון הוא הזמנה לעצור רגע ולעבוד.",
@@ -49,6 +52,7 @@ const residencyIncludes = [
 const residencyFormUrl = (import.meta.env.VITE_RESIDENCY_FORM_URL as string | undefined)?.trim();
 
 export function Residency() {
+  const { t } = useTranslation();
   const { isRTL } = useLanguage();
   const residencyHero = getAssetByUsage("residencyHero");
 
@@ -58,34 +62,29 @@ export function Residency() {
       <Navigation />
 
       <div className="mx-auto max-w-7xl space-y-24 px-6 py-16">
-        <motion.section
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className={`grid items-center gap-12 lg:grid-cols-[0.95fr_1.05fr] ${isRTL ? "text-right" : "text-left"}`}
-        >
-          <div className="space-y-8">
-            <h1 className="text-5xl md:text-6xl lg:text-7xl">רזידנסי</h1>
-            <p className="max-w-3xl text-2xl leading-relaxed text-secondary">{residencyParagraphs[0]}</p>
-          </div>
+        <PageHeroTitle title={t.residency.title} subtitle={residencyParagraphs[0]} />
 
-          {residencyHero ? (
-            <div className="space-y-4">
-              <div className="overflow-hidden rounded-[2.25rem] border border-black/8 bg-white/75 shadow-2xl shadow-stone-200/25">
-                <ImageWithFallback
-                  src={residencyHero.src}
-                  alt={residencyHero.altHe}
-                  className="aspect-[16/10] w-full object-cover"
-                  loading="eager"
-                  decoding="async"
-                />
-              </div>
-              <p className={`text-sm text-secondary ${isRTL ? "text-right" : "text-left"}`}>
-                {residencyHero.captionHe}
-              </p>
+        {residencyHero ? (
+          <motion.section
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.15 }}
+            className="mx-auto max-w-5xl space-y-4"
+          >
+            <div className="overflow-hidden rounded-[2.25rem] border border-black/8 bg-white/75 shadow-2xl shadow-stone-200/25">
+              <ImageWithFallback
+                src={residencyHero.src}
+                alt={residencyHero.altHe}
+                className="aspect-[16/10] w-full object-cover"
+                loading="eager"
+                decoding="async"
+              />
             </div>
-          ) : null}
-        </motion.section>
+            <p className={`text-sm text-secondary ${isRTL ? "text-right" : "text-left"}`}>
+              {residencyHero.captionHe}
+            </p>
+          </motion.section>
+        ) : null}
 
         <motion.section
           initial={{ opacity: 0, y: 30 }}
@@ -131,19 +130,11 @@ export function Residency() {
         >
           <div className="mx-auto max-w-3xl space-y-8 text-center">
             <h2 className="text-4xl md:text-5xl">איך מגישים מועמדות</h2>
-            <a
+            <HandDrawnResidencyButton
               href={residencyFormUrl || "#"}
-              target={residencyFormUrl ? "_blank" : undefined}
-              rel={residencyFormUrl ? "noopener noreferrer" : undefined}
-              aria-disabled={!residencyFormUrl}
-              className={`inline-flex items-center justify-center rounded-full px-8 py-4 text-base font-medium transition-all duration-300 ${
-                residencyFormUrl
-                  ? "bg-accent text-white shadow-xl hover:scale-[1.02] hover:shadow-2xl"
-                  : "cursor-not-allowed bg-stone-300 text-stone-600"
-              }`}
-            >
-              Apply for Residency
-            </a>
+              disabled={!residencyFormUrl}
+              label={t.residency.applyButton}
+            />
           </div>
         </motion.section>
       </div>
@@ -175,5 +166,70 @@ function ResidencyFeatureCard({ item, index }: ResidencyFeatureCardProps) {
         <h3 className="text-lg font-light leading-relaxed text-foreground">{item.title}</h3>
       </div>
     </motion.div>
+  );
+}
+
+type HandDrawnResidencyButtonProps = {
+  href: string;
+  disabled: boolean;
+  label: string;
+};
+
+function HandDrawnResidencyButton({ href, disabled, label }: HandDrawnResidencyButtonProps) {
+  const draw = {
+    hidden: { pathLength: 0, opacity: 0 },
+    visible: {
+      pathLength: 1,
+      opacity: 1,
+      transition: {
+        pathLength: { duration: 1.8, ease: [0.43, 0.13, 0.23, 0.96] },
+        opacity: { duration: 0.4 },
+      },
+    },
+  };
+
+  return (
+    <div className="relative mx-auto inline-flex w-fit items-center justify-center px-6 py-5">
+      <framerMotion.svg
+        width="100%"
+        height="100%"
+        viewBox="0 0 520 170"
+        preserveAspectRatio="none"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.8 }}
+        className="pointer-events-none absolute inset-0 h-full w-full text-accent"
+        aria-hidden="true"
+      >
+        <framerMotion.path
+          d="M 75 38
+             C 25 54, 18 116, 84 134
+             C 184 158, 336 156, 430 132
+             C 494 116, 504 60, 454 38
+             C 376 6, 152 8, 75 38"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          variants={draw}
+          className="opacity-90"
+        />
+      </framerMotion.svg>
+
+      <a
+        href={href}
+        target={disabled ? undefined : "_blank"}
+        rel={disabled ? undefined : "noopener noreferrer"}
+        aria-disabled={disabled}
+        className={`relative inline-flex min-h-14 items-center justify-center px-12 py-4 text-lg font-medium transition-all duration-300 ${
+          disabled
+            ? "cursor-not-allowed text-stone-500"
+            : "text-accent hover:scale-[1.02] hover:text-accent/80"
+        }`}
+      >
+        {label}
+      </a>
+    </div>
   );
 }

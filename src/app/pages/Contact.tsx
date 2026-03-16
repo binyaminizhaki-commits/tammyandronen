@@ -3,6 +3,7 @@ import { motion } from "motion/react";
 import { Mail, MapPin, Phone } from "lucide-react";
 
 import { Navigation } from "../components/Navigation";
+import { PageHeroTitle } from "../components/PageHeroTitle";
 import { UnifiedBackground } from "../components/UnifiedBackground";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useTranslation } from "../translations/useTranslation";
@@ -148,15 +149,7 @@ export function Contact() {
       <Navigation />
 
       <div className="mx-auto max-w-7xl space-y-16 px-6 py-16">
-        <motion.section
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className={isRTL ? "space-y-4 text-right" : "space-y-4 text-left"}
-        >
-          <h1 className="text-5xl md:text-6xl lg:text-7xl">{t.contact.title}</h1>
-          <p className="max-w-3xl text-xl leading-relaxed text-secondary">{copy.contactDescription}</p>
-        </motion.section>
+        <PageHeroTitle title={t.contact.title} subtitle={copy.contactDescription} />
 
         <motion.section
           initial={{ opacity: 0, y: 30 }}

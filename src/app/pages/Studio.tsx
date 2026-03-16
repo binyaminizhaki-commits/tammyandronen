@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import { Navigation } from "../components/Navigation";
+import { PageHeroTitle } from "../components/PageHeroTitle";
 import { UnifiedBackground } from "../components/UnifiedBackground";
 import { ResponsiveImageGrid } from "../components/media/ResponsiveImageGrid";
 import { useLanguage } from "../contexts/LanguageContext";
@@ -59,17 +60,7 @@ export function Studio() {
       <Navigation />
 
       <div className="mx-auto max-w-7xl space-y-24 px-6 py-16">
-        <motion.section
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className={`mx-auto max-w-4xl space-y-6 ${isRTL ? "text-right" : "text-left"}`}
-        >
-          <div className="space-y-6">
-            <h1 className="text-5xl md:text-6xl lg:text-7xl">הארכיון - בית למחול</h1>
-            <p className="max-w-2xl text-xl leading-relaxed text-secondary">{studioParagraphs[0]}</p>
-          </div>
-        </motion.section>
+        <PageHeroTitle title="הארכיון - בית למחול" subtitle={studioParagraphs[0]} />
 
         <motion.section
           initial={{ opacity: 0, y: 30 }}

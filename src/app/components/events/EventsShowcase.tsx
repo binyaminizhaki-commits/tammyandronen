@@ -7,6 +7,7 @@ import { useLanguage } from "../../contexts/LanguageContext";
 import { useTranslation } from "../../translations/useTranslation";
 import { cn } from "../../../lib/utils";
 import { ImageWithFallback } from "../figma/ImageWithFallback";
+import { PageHeroTitle } from "../PageHeroTitle";
 
 type EventsShowcaseProps = {
   mode?: "page" | "home";
@@ -261,17 +262,11 @@ export function EventsShowcase({
         >
           <div className="border-b border-black/8 px-6 py-8 md:px-10 md:py-10">
             <div className={cn("grid gap-8 md:grid-cols-[minmax(0,1fr)_16rem]", isRTL ? "text-right" : "text-left")}>
-              <div className="space-y-4">
-                <p className="text-sm text-secondary">
-                  {isHomeMode ? labels.homeTitle : labels.pageTitle}
-                </p>
-                <h1 className="max-w-4xl text-5xl md:text-6xl lg:text-7xl">
-                  {isHomeMode ? labels.homeTitle : labels.pageTitle}
-                </h1>
-                <p className="max-w-3xl text-lg leading-relaxed text-secondary">
-                  {isHomeMode ? labels.homeDescription : labels.pageDescription}
-                </p>
-              </div>
+              <PageHeroTitle
+                title={isHomeMode ? labels.homeTitle : labels.pageTitle}
+                subtitle={isHomeMode ? labels.homeDescription : labels.pageDescription}
+                compact
+              />
 
               <div className={cn("grid gap-px border border-black/8 bg-black/8", isRTL ? "text-right" : "text-left")}>
                 <div className="bg-white/80 p-4">
